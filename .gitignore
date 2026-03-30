@@ -16,9 +16,6 @@ dist/
 build/
 out/
 .next/
-client/dist/
-client/build/
-server/dist/
 
 # ── Logs ──────────────────────────────────────────────────
 logs/
@@ -28,9 +25,6 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 debug.log*
-server/*.log
-client/*.log
-client/*.txt
 
 # ── Vite / bundler cache ──────────────────────────────────
 .vite/
@@ -61,4 +55,5 @@ Thumbs.db
 # ── Python (just in case) ─────────────────────────────────
 venv/
 ENV/
+__pycache__/
 
