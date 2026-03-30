@@ -1,0 +1,2852 @@
+.sidebar {
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  border-right: 1px solid var(--border-default);
+}
+
+
+.dark .sidebar {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-right-color: var(--border-default);
+}
+
+/* Brand background using CSS variable */
+.bg-primary-500 {
+  background-color: var(--primary-500) !important;
+}
+
+/* Sidebar text helpers */
+.text-on-inverse {
+  color: var(--text-inverse) !important;
+}
+
+.text-on-surface {
+  color: var(--text-primary) !important;
+}
+
+.text-sidebar-muted {
+  color: var(--text-secondary) !important;
+}
+
+/* Sidebar input styling */
+.sidebar-input {
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid var(--border-default);
+  color: var(--text-primary);
+}
+
+.dark .sidebar-input {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* Sidebar link states */
+.sidebar-link {
+  color: var(--text-sidebar-muted);
+}
+
+.sidebar-link:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.sidebar-link-active {
+  background: var(--primary-600);
+  color: var(--text-inverse);
+  box-shadow: var(--shadow-lg);
+}
+
+.dark .sidebar-link-active {
+  background: var(--primary-700);
+}
+
+/* Collapsed tooltip background */
+.sidebar-tooltip {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+}
+
+/* Section border using theme variable */
+.section-border-top {
+  border-top: 1px solid var(--border-default);
+}
+
+/* Brand name color: adapts to primary text color in both themes */
+.sidebar .brand-name {
+  color: var(--text-primary);
+}
+
+/* Sidebar profile text visibility */
+.sidebar .sidebar-profile-name {
+  color: var(--text-primary) !important;
+  font-weight: 700;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+}
+
+.sidebar .sidebar-profile-role {
+  /* Use theme-aware primary text so role is dark in light mode and light in dark mode */
+  color: var(--text-primary) !important;
+}
+
+.dark .sidebar .sidebar-profile-role {
+  color: var(--text-primary) !important;
+}
+
+
+/* ============================================
+   AIRLINE MANAGEMENT SYSTEM - PROFESSIONAL UI
+   Version: 3.4.0 (Dark Aero-Modern UI - Image Match)
+   Author: AMS Development Team
+   Theme: Deep Navy, Muted Sky Blue & Vibrant Accents
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================
+   DESIGN SYSTEM - CSS CUSTOM PROPERTIES
+   ============================================ */
+
+@layer base {
+  :root {
+    /* Typography */
+    --font-main: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Plus Jakarta Sans', var(--font-main);
+    --font-mono: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+
+    /* Primary Brand Colors (Vibrant Sky Blue) */
+    --primary-50: #eff6ff;
+    --primary-100: #dbeafe;
+    --primary-200: #bfdbfe;
+    --primary-300: #93c5fd;
+    --primary-400: #60a5fa;
+    --primary-500: #3b82f6;
+    /* Core Sky Blue */
+    --primary-600: #2563eb;
+    /* Deeper Sky Blue */
+    --primary-700: #1d4ed8;
+    --primary-800: #1e40af;
+    --primary-900: #1e3a8a;
+    --primary-950: #172554;
+
+    /* Secondary/Accent Colors (Vibrant Purple) */
+    --accent-50: #f5f3ff;
+    --accent-100: #ede9fe;
+    --accent-500: #8b5cf6;
+    --accent-600: #7c3aed;
+    --accent-700: #6d28d9;
+
+    /* Semantic Colors */
+    --success-50: #ecfdf5;
+    --success-100: #d1fae5;
+    --success-400: #34d399;
+    --success-500: #10b981;
+    --success-600: #059669;
+    --success-700: #047857;
+
+    --warning-50: #fffbeb;
+    --warning-100: #fef3c7;
+    --warning-400: #fbbf24;
+    --warning-500: #f59e0b;
+    --warning-600: #d97706;
+    --warning-700: #b45309;
+
+    --danger-50: #fef2f2;
+    --danger-100: #fee2e2;
+    --danger-400: #f87171;
+    --danger-500: #ef4444;
+    --danger-600: #dc2626;
+    --danger-700: #b91c1c;
+
+    --info-50: #f0f9ff;
+    --info-100: #e0f2fe;
+    --info-500: #0ea5e9;
+    --info-600: #0284c7;
+    --info-700: #0369a1;
+
+    /* Neutral Colors (Slate Spectrum) */
+    --slate-50: #f8fafc;
+    --slate-100: #f1f5f9;
+    --slate-200: #e2e8f0;
+    --slate-300: #cbd5e1;
+    --slate-400: #94a3b8;
+    --slate-500: #64748b;
+    --slate-600: #475569;
+    --slate-700: #334155;
+    --slate-800: #1e293b;
+    --slate-900: #0f172a;
+    --slate-950: #020617;
+
+    /* Surface & Background (LIGHT THEME DEFAULTS - will be overridden by .dark block) */
+    --bg-primary: #f9fcff;
+    /* Very subtle light sky blue background for pages */
+    --bg-secondary: #eef7ff;
+    /* Slightly deeper light blue for secondary backgrounds */
+    --bg-tertiary: #d7edf9;
+    /* More visible light blue for darker light elements */
+    --surface-primary: #ffffff;
+    /* Pure White for cards, forms, main content */
+    --surface-elevated: #ffffff;
+    --surface-overlay: rgba(0, 0, 0, 0.4);
+
+    /* Text Colors */
+    --text-primary: var(--slate-900);
+    --text-secondary: var(--slate-700);
+    --text-tertiary: var(--slate-500);
+    --text-muted: var(--slate-400);
+    --text-inverse: #ffffff;
+    --text-brand: var(--primary-600);
+
+    /* Border Colors */
+    --border-light: var(--slate-100);
+    --border-default: var(--slate-200);
+    --border-dark: var(--slate-300);
+    --border-focus: var(--primary-500);
+
+    /* Shadows (Soft & Elevated for light theme) */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.05), 0 1px 2px -1px rgb(0 0 0 / 0.03);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.12), 0 8px 10px -6px rgb(0 0 0 / 0.06);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.2);
+    --shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.03);
+
+    /* Colored Shadows for Buttons/Cards (subtle bloom effect on light backgrounds) */
+    --shadow-primary: 0 8px 20px -6px rgb(37 99 235 / 0.25);
+    --shadow-success: 0 8px 20px -6px rgb(16 185 129 / 0.25);
+    --shadow-danger: 0 8px 20px -6px rgb(239 68 68 / 0.25);
+    --shadow-warning: 0 8px 20px -6px rgb(245 158 11 / 0.25);
+    --shadow-accent: 0 8px 20px -6px rgb(124 58 237 / 0.2);
+
+    --shadow-card: 0 2px 8px -2px rgb(0 0 0 / 0.04), 0 4px 12px -4px rgb(0 0 0 / 0.02);
+    --shadow-card-hover: 0 8px 24px -6px rgb(0 0 0 / 0.08), 0 16px 48px -12px rgb(0 0 0 / 0.05);
+
+    /* Border Radius */
+    --radius-sm: 0.375rem;
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --radius-xl: 1rem;
+    --radius-2xl: 1.25rem;
+    --radius-3xl: 1.5rem;
+    --radius-full: 9999px;
+
+    /* Spacing (Tailwind's default scale) */
+    --spacing-xs: 0.25rem;
+    --spacing-sm: 0.5rem;
+    --spacing-md: 1rem;
+    --spacing-lg: 1.5rem;
+    --spacing-xl: 2rem;
+    --spacing-2xl: 3rem;
+    --spacing-3xl: 4rem;
+
+    /* Transitions */
+    --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0, 1, 1);
+    --ease-out: cubic-bezier(0, 0, 0.2, 1);
+    --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    --ease-elastic: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+
+    --duration-fast: 150ms;
+    --duration-base: 200ms;
+    --duration-slow: 300ms;
+    --duration-slower: 500ms;
+
+    /* Z-Index Scale */
+    --z-dropdown: 1000;
+    --z-sticky: 1020;
+    --z-fixed: 1030;
+    --z-modal-backdrop: 1040;
+    --z-modal: 1050;
+    --z-popover: 1060;
+    --z-tooltip: 1070;
+    --z-toast: 1080;
+
+    /* Container Widths */
+    --container-sm: 640px;
+    --container-md: 768px;
+    --container-lg: 1024px;
+    --container-xl: 1280px;
+    --container-2xl: 1536px;
+  }
+
+  /*
+    DARK MODE VARIABLES:
+    This block is activated when the 'dark' class is present on <html> or <body>.
+    It now perfectly matches the dark UI from your provided image.
+  */
+  .dark {
+    /* Backgrounds (Deep Navy to Slightly Lighter Dark Blue) */
+    --bg-primary: #0e1629;
+    /* Deepest Navy for the main page background (Image match) */
+    --surface-primary: #1a253c;
+    /* Card/Surface background (Muted Sky Blue from Image) */
+    --bg-secondary: #2a3750;
+    /* Lighter dark blue for secondary areas/hover states (Image match) */
+    --bg-tertiary: #3b4c6e;
+    /* Even lighter dark blue for subtle depth/progress bars (Image match) */
+    --surface-elevated: #2a3750;
+    /* Elevated surfaces (matches bg-secondary) */
+    --surface-overlay: rgba(0, 0, 0, 0.7);
+    /* Darker overlay for modals */
+
+    /* Text Colors (Light Grays/Whites for Readability) */
+    --text-primary: var(--slate-50);
+    /* Main text: Very light gray */
+    --text-secondary: var(--slate-300);
+    /* Secondary text: Light gray */
+    --text-tertiary: var(--slate-400);
+    /* Muted text: Medium light gray */
+    --text-muted: var(--slate-500);
+    /* Very muted text: Gray */
+    --text-inverse: #ffffff;
+    /* White text always (for primary buttons/badges/active states) */
+
+    /* Border Colors (Subtle light grays/blues for dark mode) */
+    --border-light: #2a3750;
+    /* Matches bg-secondary for subtle borders */
+    --border-default: #3b4c6e;
+    /* Matches bg-tertiary for default borders */
+    --border-dark: #4f617d;
+    /* Darker light gray border */
+
+    /* Shadows (Adjusted for Dark Backgrounds) */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.1);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.2), 0 1px 2px -1px rgb(0 0 0 / 0.12);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.15);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.2);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.35), 0 8px 10px -6px rgb(0 0 0 / 0.25);
+    --shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.4);
+
+    --shadow-card: 0 2px 8px -2px rgb(0 0 0 / 0.2), 0 4px 12px -4px rgb(0 0 0 / 0.1);
+    --shadow-card-hover: 0 8px 24px -6px rgb(0 0 0 / 0.35), 0 16px 48px -12px rgb(0 0 0 / 0.25);
+
+    /* Colored shadows are kept vibrant, but opacity adjusted */
+    --shadow-primary: 0 8px 20px -6px rgb(37 99 235 / 0.4);
+    --shadow-success: 0 8px 20px -6px rgb(16 185 129 / 0.4);
+    --shadow-danger: 0 8px 20px -6px rgb(239 68 68 / 0.4);
+    --shadow-warning: 0 8px 20px -6px rgb(245 158 11 / 0.4);
+    --shadow-accent: 0 8px 20px -6px rgb(124 58 237 / 0.35);
+  }
+
+  /* Base Reset & Typography (applies to both light and dark, unless overridden by .dark block) */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    @apply min-h-screen antialiased;
+    font-family: var(--font-main);
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    background-color: var(--bg-primary);
+    /* Uses light/dark primary background */
+    /* Subtle dot pattern for texture, now uses light slate-100 by default, dark mode handles its own */
+    background-image: radial-gradient(var(--slate-100) 0.5px, transparent 0.5px);
+    background-size: 24px 24px;
+    color: var(--text-primary);
+    /* Uses light/dark primary text */
+    line-height: 1.6;
+  }
+
+  /* Dark mode specific background pattern */
+  .dark body {
+    background-image: radial-gradient(#1e293b 0.5px, transparent 0.5px);
+    /* Darker dots, matching image */
+  }
+
+  /* Selection Styling */
+  ::selection {
+    background-color: var(--primary-100);
+    color: var(--primary-900);
+  }
+
+  ::-moz-selection {
+    background-color: var(--primary-100);
+    color: var(--primary-900);
+  }
+
+  /* Focus Visible */
+  :focus-visible {
+    outline: 2px solid var(--primary-500);
+    outline-offset: 2px;
+  }
+
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Typography Hierarchy */
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.25;
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+    letter-spacing: -0.025em;
+  }
+
+  h1 {
+    font-size: 2.5rem;
+  }
+
+  h2 {
+    font-size: 2rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+
+  h4 {
+    font-size: 1.25rem;
+  }
+
+  h5 {
+    font-size: 1.125rem;
+  }
+
+  h6 {
+    font-size: 1rem;
+  }
+
+  p {
+    color: var(--text-secondary);
+    /* Adapts to light/dark secondary text */
+    line-height: 1.7;
+  }
+
+  a {
+    color: var(--primary-600);
+    /* Sky blue links for both themes */
+    text-decoration: none;
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  a:hover {
+    color: var(--primary-700);
+  }
+
+  /* Remove default button styles */
+  button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+  }
+
+  /* Images */
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* ============================================
+   COMPONENT STYLES
+   ============================================ */
+
+@layer components {
+
+  /* ─────────────────────────────────────────
+     DASHBOARD CARDS
+     ───────────────────────────────────────── */
+  .dashboard-card {
+    @apply relative overflow-hidden;
+    background: var(--surface-primary);
+    /* Adapts to light/dark surface */
+    border-radius: var(--radius-2xl);
+    border: 1px solid var(--border-default);
+    box-shadow: var(--shadow-card);
+    transition: all var(--duration-slow) var(--ease-default);
+  }
+
+  .dashboard-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: var(--primary-200);
+    /* Highlight border with light sky blue */
+  }
+
+  .dark .dashboard-card:hover {
+    /* Dark mode specific border color on hover */
+    border-color: var(--primary-700);
+  }
+
+  .dashboard-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    /* Subtle gradient for the top highlight */
+    background: linear-gradient(90deg, var(--primary-500), var(--accent-500));
+    opacity: 0;
+    transition: opacity var(--duration-base) var(--ease-default);
+  }
+
+  .dashboard-card:hover::before {
+    opacity: 1;
+  }
+
+  .dashboard-card-header {
+    @apply px-6 py-5;
+    border-bottom: 1px solid var(--border-light);
+    /* Gentle header background (adapts to light/dark primary/secondary backgrounds) */
+    background: linear-gradient(to right, var(--surface-primary), var(--bg-secondary));
+  }
+
+  .dashboard-card-body {
+    @apply p-6;
+  }
+
+  .dashboard-card-footer {
+    @apply px-6 py-4;
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    border-top: 1px solid var(--border-light);
+    border-radius: 0 0 var(--radius-2xl) var(--radius-2xl);
+  }
+
+  /* Card Variants */
+  .dashboard-card-elevated {
+    @apply dashboard-card;
+    box-shadow: var(--shadow-lg);
+    /* More pronounced shadow */
+  }
+
+  .dashboard-card-bordered {
+    @apply dashboard-card;
+    border: 2px solid var(--border-default);
+    box-shadow: none;
+    /* No shadow for bordered variant */
+  }
+
+  .dashboard-card-gradient {
+    @apply dashboard-card;
+    /* Card with a soft background gradient, uses primary-50 for light mode */
+    background: linear-gradient(135deg, var(--surface-primary) 0%, var(--primary-50) 100%);
+  }
+
+  /* Dark mode specific adjustment for dashboard-card-gradient (uses dark background colors) */
+  .dark .dashboard-card-gradient {
+    background: linear-gradient(135deg, var(--surface-primary) 0%, var(--bg-secondary) 100%);
+  }
+
+  /* ─────────────────────────────────────────
+     INPUT FIELDS
+     ───────────────────────────────────────── */
+  .input-field {
+    @apply w-full;
+    padding: 0.875rem 1rem;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    border: 1.5px solid var(--border-default);
+    border-radius: var(--radius-xl);
+    transition: all var(--duration-base) var(--ease-default);
+  }
+
+  .input-field::placeholder {
+    color: var(--text-muted);
+    /* Adapts to light/dark muted text */
+  }
+
+  .input-field:hover {
+    border-color: var(--border-dark);
+    /* Adapts to light/dark dark border */
+    background: var(--bg-tertiary);
+    /* Adapts to light/dark tertiary background */
+  }
+
+  .input-field:focus {
+    background: var(--surface-primary);
+    /* Adapts to light/dark surface primary */
+    border-color: var(--primary-500);
+    box-shadow:
+      0 0 0 4px rgb(59 130 246 / 0.1),
+      /* Soft primary ring */
+      var(--shadow-sm);
+    outline: none;
+  }
+
+  .input-field:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    background: var(--bg-tertiary);
+    /* Adapts to light/dark tertiary background */
+    color: var(--text-muted);
+    /* Adapts to light/dark muted text */
+  }
+
+  /* Input States */
+  .input-field-error {
+    border-color: var(--danger-500);
+    background: var(--danger-50);
+  }
+
+  .dark .input-field-error {
+    /* Dark mode adjustment for error background */
+    background: rgb(254 242 242 / 0.15);
+    /* Subtler on dark */
+  }
+
+  .input-field-error:focus {
+    border-color: var(--danger-500);
+    box-shadow: 0 0 0 4px rgb(239 68 68 / 0.1);
+  }
+
+  .input-field-success {
+    border-color: var(--success-500);
+    background: var(--success-50);
+  }
+
+  .dark .input-field-success {
+    /* Dark mode adjustment for success background */
+    background: rgb(236 253 245 / 0.15);
+    /* Subtler on dark */
+  }
+
+  .input-field-success:focus {
+    border-color: var(--success-500);
+    box-shadow: 0 0 0 4px rgb(16 185 129 / 0.1);
+  }
+
+  /* Input Sizes */
+  .input-field-sm {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .input-field-lg {
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    border-radius: var(--radius-2xl);
+  }
+
+  /* Input with Icon */
+  .input-wrapper {
+    @apply relative;
+  }
+
+  .input-icon {
+    @apply absolute top-1/2 -translate-y-1/2;
+    color: var(--text-muted);
+    /* Adapts to light/dark muted text */
+    pointer-events: none;
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  .input-icon-left {
+    left: 1rem;
+  }
+
+  .input-icon-right {
+    right: 1rem;
+  }
+
+  .input-field-icon-left {
+    padding-left: 2.75rem;
+  }
+
+  .input-field-icon-right {
+    padding-right: 2.75rem;
+  }
+
+  .input-wrapper:focus-within .input-icon {
+    color: var(--primary-500);
+  }
+
+  /* Form Label */
+  .form-label {
+    @apply block mb-2;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  .form-label-required::after {
+    content: ' *';
+    color: var(--danger-500);
+  }
+
+  /* Form Helper Text */
+  .form-helper {
+    @apply mt-2;
+    font-size: 0.8125rem;
+    color: var(--text-tertiary);
+    /* Adapts to light/dark tertiary text */
+  }
+
+  .form-error {
+    @apply mt-2;
+    font-size: 0.8125rem;
+    color: var(--danger-600);
+  }
+
+  /* ─────────────────────────────────────────
+     BUTTONS
+     ───────────────────────────────────────── */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2;
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    line-height: 1.25;
+    border-radius: var(--radius-xl);
+    transition: all var(--duration-base) var(--ease-default);
+    cursor: pointer;
+    white-space: nowrap;
+    user-select: none;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  .btn:active {
+    transform: scale(0.98);
+  }
+
+  /* Primary Button (Sky Blue Gradient) */
+  .btn-primary {
+    @apply btn;
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--primary-500) 100%);
+    color: var(--text-inverse);
+    /* White text on blue */
+    box-shadow:
+      var(--shadow-md),
+      var(--shadow-primary);
+    /* Soft glow matching primary color */
+  }
+
+  .btn-primary:hover {
+    background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-400) 100%);
+    box-shadow:
+      var(--shadow-lg),
+      var(--shadow-primary);
+    transform: translateY(-2px);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Secondary Button (Clean White/Slate or Dark Blue/Light Gray for dark mode) */
+  .btn-secondary {
+    @apply btn;
+    background: var(--surface-primary);
+    /* Adapts to light/dark surface */
+    color: var(--text-secondary);
+    /* Adapts to light/dark secondary text */
+    border: 1.5px solid var(--border-default);
+    /* Adapts to light/dark default border */
+    box-shadow: var(--shadow-xs);
+  }
+
+  .btn-secondary:hover {
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    border-color: var(--border-dark);
+    /* Adapts to light/dark dark border */
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+    box-shadow: var(--shadow-sm);
+  }
+
+  /* Success Button (Green Gradient) */
+  .btn-success {
+    @apply btn;
+    background: linear-gradient(135deg, var(--success-600) 0%, var(--success-500) 100%);
+    color: var(--text-inverse);
+    box-shadow:
+      var(--shadow-md),
+      var(--shadow-success);
+  }
+
+  .btn-success:hover {
+    background: linear-gradient(135deg, var(--success-500) 0%, var(--success-400) 100%);
+    box-shadow:
+      var(--shadow-lg),
+      var(--shadow-success);
+    transform: translateY(-2px);
+  }
+
+  /* Danger Button (Red Gradient) */
+  .btn-danger {
+    @apply btn;
+    background: linear-gradient(135deg, var(--danger-600) 0%, var(--danger-500) 100%);
+    color: var(--text-inverse);
+    box-shadow:
+      var(--shadow-md),
+      var(--shadow-danger);
+  }
+
+  .btn-danger:hover {
+    background: linear-gradient(135deg, var(--danger-500) 0%, var(--danger-400) 100%);
+    box-shadow:
+      var(--shadow-lg),
+      var(--shadow-danger);
+    transform: translateY(-2px);
+  }
+
+  /* Warning Button (Orange Gradient) */
+  .btn-warning {
+    @apply btn;
+    background: linear-gradient(135deg, var(--warning-600) 0%, var(--warning-500) 100%);
+    color: var(--text-inverse);
+    box-shadow:
+      var(--shadow-md),
+      var(--shadow-warning);
+  }
+
+  .btn-warning:hover {
+    background: linear-gradient(135deg, var(--warning-500) 0%, var(--warning-400) 100%);
+    box-shadow:
+      var(--shadow-lg),
+      var(--shadow-warning);
+    transform: translateY(-2px);
+  }
+
+  /* Ghost Button (Transparent, subtle hover) */
+  .btn-ghost {
+    @apply btn;
+    background: transparent;
+    color: var(--text-secondary);
+    /* Adapts to light/dark secondary text */
+    box-shadow: none;
+  }
+
+  .btn-ghost:hover {
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  /* Link Button (Text-based, primary color) */
+  .btn-link {
+    @apply btn;
+    padding: 0;
+    background: transparent;
+    color: var(--primary-600);
+    /* Sky blue link for both themes */
+    box-shadow: none;
+  }
+
+  .btn-link:hover {
+    color: var(--primary-700);
+    text-decoration: underline;
+    transform: none;
+  }
+
+  /* Icon Button */
+  .btn-icon {
+    @apply btn p-3;
+    border-radius: var(--radius-xl);
+  }
+
+  .btn-icon-circle {
+    @apply btn-icon;
+    border-radius: var(--radius-full);
+  }
+
+  /* Button Sizes */
+  .btn-xs {
+    padding: 0.5rem 0.875rem;
+    font-size: 0.75rem;
+    border-radius: var(--radius-lg);
+    gap: 0.375rem;
+  }
+
+  .btn-sm {
+    padding: 0.625rem 1rem;
+    font-size: 0.8125rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    border-radius: var(--radius-2xl);
+  }
+
+  .btn-xl {
+    padding: 1.25rem 2.5rem;
+    font-size: 1.125rem;
+    border-radius: var(--radius-2xl);
+  }
+
+  /* Button Loading State */
+  .btn-loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+  }
+
+  .btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid currentColor;
+    border-right-color: transparent;
+    border-radius: var(--radius-full);
+    animation: spin 0.75s linear infinite;
+  }
+
+  /* --------------------------------------------------
+   Strong dark-mode hover/background overrides
+   Appended to ensure any remaining white hover states
+   (tables, cards, list items, utility .bg-white) are
+   forced to use dark surfaces and readable text.
+   -------------------------------------------------- */
+  .dark .bg-white,
+  .dark .bg-white:hover,
+  .dark .hover\:bg-white:hover,
+  .dark .hover\:bg-gray-50:hover,
+  .dark .hover\:bg-slate-50:hover,
+  .dark .hover\:bg-neutral-50:hover,
+  .dark .ant-table-tbody>tr>td,
+  .dark .ant-table-tbody>tr:hover>td,
+  .dark .ant-table-row-hover,
+  .dark .ant-table-row:hover,
+  .dark .ant-list-item:hover,
+  .dark .ant-card:hover,
+  .dark .card.bg-white,
+  .dark .list-item.bg-white {
+    background-color: var(--surface-elevated) !important;
+    color: var(--text-primary) !important;
+  }
+
+  /* Ensure table headers/cells keep dark borders */
+  .dark .ant-table-tbody>tr>td,
+  .dark .ant-table-thead>tr>th {
+    border-color: var(--border-muted) !important;
+  }
+
+  /* Inline-style white backgrounds on hover (fallback) */
+  .dark [style*="background: white"]:hover,
+  .dark [style*="background:#fff"]:hover,
+  .dark [style*="background:#ffffff"]:hover {
+    background-color: var(--surface-elevated) !important;
+  }
+
+  /* Extra: prevent large containers switching to pure white on hover */
+  .dark .hover\:bg-white>*,
+  .dark .hover\:bg-white * {
+    background-color: transparent !important;
+  }
+
+  .btn-primary.btn-loading::after,
+  .btn-success.btn-loading::after,
+  .btn-danger.btn-loading::after,
+  .btn-warning.btn-loading::after {
+    border-color: white;
+    /* White spinner for colored buttons */
+    border-right-color: transparent;
+  }
+
+  /* ─────────────────────────────────────────
+     GLASSMORPHISM
+     ───────────────────────────────────────── */
+  .glass-effect {
+    /* Base for light theme glass */
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow:
+      0 8px 32px 0 rgba(31, 38, 135, 0.1),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  }
+
+  /* Dark mode specific glass effect */
+  .dark .glass-effect {
+    background: rgb(26 37 60 / 0.7);
+    /* Darker transparent background matching surfaces */
+    border: 1px solid rgb(59 76 100 / 0.3);
+    /* Subtler border for contrast */
+  }
+
+  .glass-effect-dark {
+    background: rgb(26 37 60 / 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgb(59 76 100 / 0.3);
+  }
+
+  .glass-effect-colored {
+    /* Uses very light primary/accent for light mode */
+    background: linear-gradient(135deg,
+        var(--primary-100) 0%,
+        var(--accent-100) 100%);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  /* Dark mode adjustment for colored glass */
+  .dark .glass-effect-colored {
+    background: linear-gradient(135deg,
+        rgb(59 130 246 / 0.1) 0%,
+        /* Transparent primary */
+        rgb(124 58 237 / 0.1) 100%
+        /* Transparent accent */
+      );
+    border: 1px solid rgb(59 76 100 / 0.3);
+  }
+
+
+  /* ─────────────────────────────────────────
+     STATUS BADGES
+     ───────────────────────────────────────── */
+  .badge {
+    @apply inline-flex items-center gap-1.5;
+    padding: 0.375rem 0.875rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.075em;
+    border-radius: var(--radius-full);
+    border: 1.5px solid transparent;
+  }
+
+  .badge-dot {
+    @apply w-2 h-2 rounded-full;
+  }
+
+  /* Badge Variants */
+  .badge-pending {
+    background: var(--warning-50);
+    color: var(--warning-700);
+    border-color: var(--warning-200);
+  }
+
+  .dark .badge-pending {
+    background: rgb(245 158 11 / 0.15);
+    /* Subtler on dark */
+    color: var(--warning-300);
+    border-color: rgb(245 158 11 / 0.3);
+  }
+
+  .badge-pending .badge-dot {
+    background: var(--warning-500);
+    animation: pulse-dot 2s infinite;
+  }
+
+  .badge-success {
+    background: var(--success-50);
+    color: var(--success-700);
+    border-color: var(--success-200);
+  }
+
+  .dark .badge-success {
+    background: rgb(16 185 129 / 0.15);
+    /* Subtler on dark */
+    color: var(--success-300);
+    border-color: rgb(16 185 129 / 0.3);
+  }
+
+  .badge-success .badge-dot {
+    background: var(--success-500);
+  }
+
+  .badge-danger {
+    background: var(--danger-50);
+    color: var(--danger-700);
+    border-color: var(--danger-200);
+  }
+
+  .dark .badge-danger {
+    background: rgb(239 68 68 / 0.15);
+    /* Subtler on dark */
+    color: var(--danger-300);
+    border-color: rgb(239 68 68 / 0.3);
+  }
+
+  .badge-danger .badge-dot {
+    background: var(--danger-500);
+  }
+
+  .badge-info {
+    background: var(--info-50);
+    color: var(--info-700);
+    border-color: var(--info-200);
+  }
+
+  .dark .badge-info {
+    background: rgb(14 165 233 / 0.15);
+    /* Subtler on dark */
+    color: var(--info-300);
+    border-color: rgb(14 165 233 / 0.3);
+  }
+
+  .badge-info .badge-dot {
+    background: var(--info-500);
+  }
+
+  .badge-neutral {
+    background: var(--slate-100);
+    color: var(--slate-700);
+    border-color: var(--slate-200);
+  }
+
+  .dark .badge-neutral {
+    background: var(--slate-800);
+    color: var(--slate-300);
+    border-color: var(--slate-700);
+  }
+
+  .badge-neutral .badge-dot {
+    background: var(--slate-400);
+  }
+
+
+  .badge-primary {
+    background: var(--primary-50);
+    color: var(--primary-700);
+    border-color: var(--primary-200);
+  }
+
+  .dark .badge-primary {
+    background: rgb(59 130 246 / 0.15);
+    /* Subtler on dark */
+    color: var(--primary-300);
+    border-color: rgb(59 130 246 / 0.3);
+  }
+
+  .badge-primary .badge-dot {
+    background: var(--primary-500);
+  }
+
+  /* Solid Badges */
+  .badge-solid-success {
+    background: var(--success-500);
+    color: white;
+    border-color: var(--success-500);
+  }
+
+  .badge-solid-danger {
+    background: var(--danger-500);
+    color: white;
+    border-color: var(--danger-500);
+  }
+
+  .badge-solid-primary {
+    background: var(--primary-500);
+    color: white;
+    border-color: var(--primary-500);
+  }
+
+  /* Badge Sizes */
+  .badge-sm {
+    padding: 0.25rem 0.625rem;
+    font-size: 0.625rem;
+  }
+
+  .badge-lg {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+  }
+
+  /* ─────────────────────────────────────────
+     TABLE STYLING
+     ───────────────────────────────────────── */
+  .ams-table {
+    @apply w-full;
+    border-collapse: separate;
+    border-spacing: 0 0.625rem;
+    /* Space between rows for card-like appearance */
+  }
+
+  .ams-table thead tr {
+    background: transparent;
+  }
+
+  .ams-table th {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    /* Adapts to light/dark muted text */
+    text-align: left;
+    border: none;
+    background: transparent;
+  }
+
+  .ams-table th:first-child {
+    padding-left: 1.5rem;
+  }
+
+  .ams-table th:last-child {
+    padding-right: 1.5rem;
+  }
+
+  .ams-table tbody tr {
+    background: var(--surface-primary);
+    /* Adapts to light/dark surface */
+    box-shadow: var(--shadow-xs);
+    transition: all var(--duration-base) var(--ease-default);
+  }
+
+  .ams-table tbody tr:hover {
+    box-shadow: var(--shadow-md);
+    transform: scale(1.005);
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+  }
+
+  .ams-table td {
+    padding: 1.125rem 1.5rem;
+    font-size: 0.9375rem;
+    color: var(--text-secondary);
+    /* Adapts to light/dark secondary text */
+    background: var(--surface-primary);
+    /* Each cell adapts to light/dark surface */
+    border-top: 1px solid var(--border-light);
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: middle;
+  }
+
+  .ams-table tbody tr:hover td {
+    /* Ensure hover background applies to cells too */
+    background: var(--bg-secondary);
+  }
+
+  .ams-table td:first-child {
+    border-left: 1px solid var(--border-light);
+    border-radius: var(--radius-2xl) 0 0 var(--radius-2xl);
+    padding-left: 1.5rem;
+  }
+
+  .ams-table td:last-child {
+    border-right: 1px solid var(--border-light);
+    border-radius: 0 var(--radius-2xl) var(--radius-2xl) 0;
+    padding-right: 1.5rem;
+  }
+
+  /* Table Row States */
+  .ams-table tbody tr.row-selected {
+    background: var(--primary-50);
+    /* Very light blue for selected row (light mode) */
+  }
+
+  .dark .ams-table tbody tr.row-selected {
+    /* Dark mode adjustment for selected row */
+    background: rgb(59 130 246 / 0.1);
+    /* Subtle transparent blue */
+  }
+
+  .ams-table tbody tr.row-selected td {
+    border-color: var(--primary-200);
+    background: var(--primary-50);
+  }
+
+  .dark .ams-table tbody tr.row-selected td {
+    border-color: var(--primary-700);
+    /* Darker primary border for dark mode selected */
+    background: rgb(59 130 246 / 0.1);
+  }
+
+  /* Sortable Header */
+  .th-sortable {
+    @apply cursor-pointer select-none;
+    transition: color var(--duration-fast) var(--ease-default);
+  }
+
+  .th-sortable:hover {
+    color: var(--text-primary);
+  }
+
+  /* Table Container */
+  .table-container {
+    @apply overflow-x-auto;
+    background: transparent;
+    /* Background should come from the table rows */
+    border-radius: var(--radius-2xl);
+    /* No border here, the rows will define their own visual container */
+    padding: 1rem 0;
+    /* Add padding around the floating rows */
+  }
+
+  /* ─────────────────────────────────────────
+     NAVIGATION & SIDEBAR
+     ───────────────────────────────────────── */
+  .nav-item {
+    @apply flex items-center gap-3;
+    padding: 0.75rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    /* Adapts to light/dark tertiary text */
+    border-radius: var(--radius-xl);
+    transition: all var(--duration-base) var(--ease-default);
+    position: relative;
+    /* For the active indicator */
+  }
+
+  .nav-item:hover {
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  .nav-item.active {
+    background: linear-gradient(135deg, var(--primary-50) 0%, var(--accent-50) 100%);
+    /* Very light blue/purple gradient for active */
+    color: var(--primary-600);
+    /* Deeper sky blue for active text */
+  }
+
+  /* Dark mode adjustment for active nav item */
+  .dark .nav-item.active {
+    background: linear-gradient(135deg, rgb(37 99 235 / 0.15) 0%, rgb(124 58 237 / 0.15) 100%);
+    /* Transparent blue/purple gradient */
+    color: var(--primary-300);
+    /* Lighter primary text for dark active */
+  }
+
+
+  .nav-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    /* Visual indicator for active state */
+    background: linear-gradient(180deg, var(--primary-500), var(--accent-500));
+    border-radius: 0 var(--radius-full) var(--radius-full) 0;
+  }
+
+  .nav-icon {
+    @apply w-5 h-5 flex-shrink-0;
+    transition: transform var(--duration-base) var(--ease-default);
+  }
+
+  .nav-item:hover .nav-icon {
+    transform: scale(1.1);
+  }
+
+  /* ─────────────────────────────────────────
+     MODAL / DIALOG
+     ───────────────────────────────────────── */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: var(--surface-overlay);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: var(--z-modal-backdrop);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--duration-base) var(--ease-default);
+  }
+
+  .modal-backdrop.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    background: var(--surface-primary);
+    /* Adapts to light/dark surface */
+    border-radius: var(--radius-3xl);
+    box-shadow: var(--shadow-2xl);
+    z-index: var(--z-modal);
+    max-width: 90vw;
+    max-height: 90vh;
+    overflow: hidden;
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--duration-slow) var(--ease-default);
+  }
+
+  .modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .modal-sm {
+    width: 24rem;
+  }
+
+  .modal-md {
+    width: 32rem;
+  }
+
+  .modal-lg {
+    width: 48rem;
+  }
+
+  .modal-xl {
+    width: 64rem;
+  }
+
+  .modal-full {
+    width: calc(100vw - 2rem);
+    height: calc(100vh - 2rem);
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-light);
+    /* Adapts to light/dark border */
+    /* Gentle header background (adapts to light/dark primary/secondary backgrounds) */
+    background: linear-gradient(to right, var(--surface-primary), var(--bg-secondary));
+  }
+
+  .modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  .modal-close {
+    @apply p-2 rounded-xl;
+    color: var(--text-muted);
+    /* Adapts to light/dark muted text */
+    transition: all var(--duration-fast) var(--ease-default);
+  }
+
+  .modal-close:hover {
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+    overflow-y: auto;
+    max-height: calc(90vh - 10rem);
+    /* Adjust based on header/footer size */
+  }
+
+  .modal-footer {
+    @apply flex items-center justify-end gap-3;
+    padding: 1.25rem 1.5rem;
+    border-top: 1px solid var(--border-light);
+    /* Adapts to light/dark border */
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+  }
+
+  /* ─────────────────────────────────────────
+     ALERTS / NOTIFICATIONS
+     ───────────────────────────────────────── */
+  .alert {
+    @apply flex items-start gap-4;
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-xl);
+    border: 1px solid transparent;
+  }
+
+  .alert-icon {
+    @apply flex-shrink-0 w-5 h-5;
+    margin-top: 0.125rem;
+  }
+
+  .alert-content {
+    @apply flex-1 min-w-0;
+  }
+
+  .alert-title {
+    font-size: 0.9375rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .alert-description {
+    font-size: 0.875rem;
+    opacity: 0.9;
+  }
+
+  .alert-success {
+    background: var(--success-50);
+    border-color: var(--success-200);
+    color: var(--success-700);
+  }
+
+  .dark .alert-success {
+    /* Dark mode adjustment for alert background/text */
+    background: rgb(16 185 129 / 0.15);
+    border-color: rgb(16 185 129 / 0.3);
+    color: var(--success-300);
+  }
+
+  .alert-danger {
+    background: var(--danger-50);
+    border-color: var(--danger-200);
+    color: var(--danger-700);
+  }
+
+  .dark .alert-danger {
+    /* Dark mode adjustment for alert background/text */
+    background: rgb(239 68 68 / 0.15);
+    border-color: rgb(239 68 68 / 0.3);
+    color: var(--danger-300);
+  }
+
+  .alert-warning {
+    background: var(--warning-50);
+    border-color: var(--warning-200);
+    color: var(--warning-700);
+  }
+
+  .dark .alert-warning {
+    /* Dark mode adjustment for alert background/text */
+    background: rgb(245 158 11 / 0.15);
+    border-color: rgb(245 158 11 / 0.3);
+    color: var(--warning-300);
+  }
+
+  .alert-info {
+    background: var(--info-50);
+    border-color: var(--info-200);
+    color: var(--info-700);
+  }
+
+  .dark .alert-info {
+    /* Dark mode adjustment for alert background/text */
+    background: rgb(14 165 233 / 0.15);
+    border-color: rgb(14 165 233 / 0.3);
+    color: var(--info-300);
+  }
+
+
+  /* ─────────────────────────────────────────
+     DROPDOWN MENU
+     ───────────────────────────────────────── */
+  .dropdown {
+    position: relative;
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 14rem;
+    background: var(--surface-primary);
+    /* Adapts to light/dark surface */
+    border: 1px solid var(--border-default);
+    /* Adapts to light/dark default border */
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl);
+    z-index: var(--z-dropdown);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition: all var(--duration-fast) var(--ease-default);
+  }
+
+  /* Open/Visible state */
+  .dropdown.open .dropdown-menu,
+  .dropdown:focus-within .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  .dropdown-item {
+    @apply flex items-center gap-3;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    /* Adapts to light/dark secondary text */
+    transition: all var(--duration-fast) var(--ease-default);
+  }
+
+  .dropdown-item:first-child {
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+  }
+
+  .dropdown-item:last-child {
+    border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+  }
+
+  .dropdown-item:hover {
+    background: var(--bg-secondary);
+    /* Adapts to light/dark secondary background */
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  .dropdown-item-danger:hover {
+    background: var(--danger-50);
+    color: var(--danger-600);
+  }
+
+  .dark .dropdown-item-danger:hover {
+    /* Dark mode adjustment */
+    background: rgb(239 68 68 / 0.15);
+    color: var(--danger-300);
+  }
+
+  .dropdown-divider {
+    height: 1px;
+    margin: 0.5rem 0;
+    background: var(--border-default);
+    /* Adapts to light/dark default border */
+  }
+
+  /* ─────────────────────────────────────────
+     AVATAR
+     ───────────────────────────────────────── */
+  .avatar {
+    @apply inline-flex items-center justify-center flex-shrink-0 overflow-hidden;
+    background: linear-gradient(135deg, var(--primary-500), var(--accent-500));
+    /* Gradient for default avatar */
+    color: white;
+    font-weight: 600;
+    border-radius: var(--radius-full);
+  }
+
+  .avatar img {
+    @apply w-full h-full object-cover;
+  }
+
+  .avatar-xs {
+    @apply w-6 h-6 text-xs;
+  }
+
+  .avatar-sm {
+    @apply w-8 h-8 text-sm;
+  }
+
+  .avatar-md {
+    @apply w-10 h-10 text-sm;
+  }
+
+  .avatar-lg {
+    @apply w-12 h-12 text-base;
+  }
+
+  .avatar-xl {
+    @apply w-16 h-16 text-lg;
+  }
+
+  .avatar-2xl {
+    @apply w-24 h-24 text-2xl;
+  }
+
+  .avatar-group {
+    @apply flex -space-x-3;
+  }
+
+  .avatar-group .avatar {
+    border: 3px solid var(--surface-primary);
+    /* White border around avatars in a group */
+    transition: transform var(--duration-fast) var(--ease-default);
+  }
+
+  .dark .avatar-group .avatar {
+    /* Dark mode avatar border */
+    border-color: var(--bg-primary);
+  }
+
+  .avatar-group .avatar:hover {
+    transform: translateY(-2px);
+    z-index: 1;
+  }
+
+  /* ─────────────────────────────────────────
+     PROGRESS BAR
+     ───────────────────────────────────────── */
+  .progress {
+    @apply w-full overflow-hidden;
+    height: 0.5rem;
+    background: var(--bg-tertiary);
+    /* Adapts to light/dark tertiary background */
+    border-radius: var(--radius-full);
+  }
+
+  .progress-bar {
+    height: 100%;
+    border-radius: var(--radius-full);
+    transition: width var(--duration-slow) var(--ease-default);
+  }
+
+  .progress-primary {
+    background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
+  }
+
+  .progress-success {
+    background: linear-gradient(90deg, var(--success-500), var(--success-400));
+  }
+
+  .progress-danger {
+    background: linear-gradient(90deg, var(--danger-500), var(--danger-400));
+  }
+
+  .progress-warning {
+    background: linear-gradient(90deg, var(--warning-500), var(--warning-400));
+  }
+
+  /* Animated Progress (for loading states) */
+  .progress-animated .progress-bar {
+    background-size: 200% 100%;
+    animation: progress-shimmer 2s linear infinite;
+  }
+
+  /* ─────────────────────────────────────────
+     SKELETON LOADING
+     ───────────────────────────────────────── */
+  .skeleton {
+    background: linear-gradient(90deg,
+        var(--bg-secondary) 25%,
+        /* Adapts to light/dark secondary background */
+        var(--bg-tertiary) 50%,
+        /* Adapts to light/dark tertiary background */
+        var(--bg-secondary) 75%);
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s ease-in-out infinite;
+    border-radius: var(--radius-lg);
+  }
+
+  .skeleton-text {
+    @apply h-4 w-full;
+  }
+
+  .skeleton-title {
+    @apply h-6 w-3/4;
+  }
+
+  .skeleton-avatar {
+    @apply w-10 h-10 rounded-full;
+  }
+
+  .skeleton-button {
+    @apply h-10 w-24;
+    border-radius: var(--radius-xl);
+  }
+
+  .skeleton-card {
+    @apply h-48 w-full;
+    border-radius: var(--radius-2xl);
+  }
+
+  /* ─────────────────────────────────────────
+     TOOLTIP
+     ───────────────────────────────────────── */
+  .tooltip {
+    position: relative;
+  }
+
+  .tooltip-content {
+    position: absolute;
+    bottom: calc(100% + 0.5rem);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.5rem 0.875rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: white;
+    background: var(--slate-800);
+    /* Dark tooltip background for both themes */
+    border-radius: var(--radius-lg);
+    white-space: nowrap;
+    z-index: var(--z-tooltip);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--duration-fast) var(--ease-default);
+  }
+
+  .tooltip-content::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--slate-800);
+  }
+
+  .tooltip:hover .tooltip-content {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  /* ─────────────────────────────────────────
+     TABS
+     ───────────────────────────────────────── */
+  .tabs {
+    @apply flex;
+    border-bottom: 1px solid var(--border-default);
+    /* Adapts to light/dark default border */
+    gap: 0.25rem;
+  }
+
+  .tab {
+    @apply relative;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text-tertiary);
+    /* Adapts to light/dark tertiary text */
+    transition: all var(--duration-fast) var(--ease-default);
+  }
+
+  .tab:hover {
+    color: var(--text-primary);
+    /* Adapts to light/dark primary text */
+  }
+
+  .tab.active {
+    color: var(--primary-600);
+    /* Deep sky blue for active tab text (light mode) */
+  }
+
+  /* Dark mode adjustment for active tab text */
+  .dark .tab.active {
+    color: var(--primary-300);
+  }
+
+  .tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    /* Active tab indicator using primary/accent gradient */
+    background: linear-gradient(90deg, var(--primary-500), var(--accent-500));
+    border-radius: var(--radius-full);
+  }
+
+  /* Pills Tabs (background for active state) */
+  .tabs-pills {
+    border-bottom: none;
+    gap: 0.5rem;
+  }
+
+  .tabs-pills .tab {
+    border-radius: var(--radius-xl);
+  }
+
+  .tabs-pills .tab.active {
+    background: var(--primary-500);
+    /* Sky blue background for active pill */
+    color: white;
+  }
+
+  .tabs-pills .tab.active::after {
+    display: none;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+@layer utilities {
+
+  /* Text Gradient (using primary & accent) */
+  .text-gradient {
+    background: linear-gradient(135deg, var(--primary-600) 0%, var(--accent-600) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-warm {
+    background: linear-gradient(135deg, var(--warning-500) 0%, var(--danger-500) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-cool {
+    background: linear-gradient(135deg, var(--info-500) 0%, var(--primary-500) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Animation Delays (as provided) */
+  .animate-delay-75 {
+    animation-delay: 75ms;
+  }
+
+  .animate-delay-100 {
+    animation-delay: 100ms;
+  }
+
+  .animate-delay-150 {
+    animation-delay: 150ms;
+  }
+
+  .animate-delay-200 {
+    animation-delay: 200ms;
+  }
+
+  .animate-delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .animate-delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .animate-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .animate-delay-1000 {
+    animation-delay: 1000ms;
+  }
+
+  /* Custom Scrollbar */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--slate-300);
+    /* Light slate thumb */
+    border-radius: var(--radius-full);
+    transition: background var(--duration-fast);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    /* Dark mode scrollbar thumb */
+    background: var(--slate-600);
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--slate-400);
+  }
+
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--slate-500);
+  }
+
+  /* Hide Scrollbar (as provided) */
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* Line Clamp (as provided) */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Background Patterns */
+  .bg-dots {
+    background-image: radial-gradient(circle, var(--slate-200) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .dark .bg-dots {
+    /* Dark mode adjustment */
+    background-image: radial-gradient(circle, var(--slate-800) 1px, transparent 1px);
+  }
+
+  .bg-grid {
+    background-image:
+      linear-gradient(var(--slate-100) 1px, transparent 1px),
+      linear-gradient(90deg, var(--slate-100) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .dark .bg-grid {
+    /* Dark mode adjustment */
+    background-image:
+      linear-gradient(var(--slate-800) 1px, transparent 1px),
+      linear-gradient(90deg, var(--slate-800) 1px, transparent 1px);
+  }
+
+
+  /* Aspect Ratios (as provided) */
+  .aspect-card {
+    aspect-ratio: 16 / 10;
+  }
+
+  .aspect-banner {
+    aspect-ratio: 21 / 9;
+  }
+
+  .aspect-portrait {
+    aspect-ratio: 3 / 4;
+  }
+
+  /* Focus Ring */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-offset-2;
+    --tw-ring-color: var(--primary-500);
+    /* Use primary color for focus ring */
+  }
+
+  /* Smooth Scroll (as provided) */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+
+  /* Divider */
+  .divider {
+    @apply flex items-center text-sm;
+    color: var(--text-tertiary);
+    /* Adapts to light/dark tertiary text */
+  }
+
+  .divider::before,
+  .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border-default);
+    /* Adapts to light/dark default border */
+  }
+
+  .divider::before {
+    margin-right: 1rem;
+  }
+
+  .divider::after {
+    margin-left: 1rem;
+  }
+}
+
+/* ============================================
+   ANIMATIONS & KEYFRAMES
+   ============================================ */
+
+/* Spin (as provided) */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Pulse (as provided) */
+@keyframes pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.5;
+  }
+}
+
+/* Pulse Dot (as provided) */
+@keyframes pulse-dot {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+}
+
+/* Skeleton Loading (as provided) */
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Progress Shimmer (as provided) */
+@keyframes progress-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Blob Animation (using theme colors) */
+@keyframes blob {
+
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+
+  25% {
+    transform: translate(20px, -30px) scale(1.1);
+  }
+
+  50% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+
+  75% {
+    transform: translate(30px, 10px) scale(1.05);
+  }
+}
+
+/* Count Up (as provided) */
+@keyframes countUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In (as provided) */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Fade In Up (as provided) */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Fade In Down (as provided) */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scale In (as provided) */
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Slide In Right (as provided) */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Slide In Left (as provided) */
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Bounce (as provided) */
+@keyframes bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+
+  50% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+/* Shake (as provided) */
+@keyframes shake {
+
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+
+  10%,
+  30%,
+  50%,
+  70%,
+  90% {
+    transform: translateX(-5px);
+  }
+
+  20%,
+  40%,
+  60%,
+  80% {
+    transform: translateX(5px);
+  }
+}
+
+/* Float (as provided) */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+/* Animation Utility Classes (as provided) */
+.animate-fadeIn {
+  animation: fadeIn var(--duration-base) var(--ease-default);
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp var(--duration-slow) var(--ease-default);
+}
+
+.animate-fadeInDown {
+  animation: fadeInDown var(--duration-slow) var(--ease-default);
+}
+
+.animate-scaleIn {
+  animation: scaleIn var(--duration-base) var(--ease-default);
+}
+
+.animate-slideInRight {
+  animation: slideInRight var(--duration-slow) var(--ease-default);
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft var(--duration-slow) var(--ease-default);
+}
+
+.animate-bounce-slow {
+  animation: bounce 2s infinite;
+}
+
+.animate-shake {
+  animation: shake 0.5s var(--ease-default);
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Stat Value Animation (as provided) */
+.stat-value {
+  animation: countUp 0.8s var(--ease-out) forwards;
+}
+
+/* ============================================
+   AUTH BACKGROUND
+   ============================================ */
+
+.auth-bg {
+  /* Soft radial gradient from light blue to primary background */
+  background: radial-gradient(ellipse at top right, var(--primary-100) 0%, var(--bg-primary) 50%);
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+}
+
+/* Dark mode adjustment for auth background */
+.dark .auth-bg {
+  background: radial-gradient(ellipse at top right, var(--primary-950) 0%, var(--bg-primary) 50%);
+  /* Darker gradient start */
+}
+
+
+.auth-bg::before {
+  content: '';
+  position: absolute;
+  width: 600px;
+  height: 600px;
+  /* Blob 1 uses primary-200 and accent-100 for a very light blue/purple blob */
+  background: linear-gradient(135deg, var(--primary-200), var(--accent-100));
+  filter: blur(100px);
+  border-radius: 50%;
+  top: -300px;
+  left: -300px;
+  z-index: 0;
+  animation: blob 15s ease-in-out infinite alternate;
+}
+
+/* Dark mode adjustment for auth blob 1 */
+.dark .auth-bg::before {
+  background: linear-gradient(135deg, var(--primary-700), var(--accent-700));
+  /* Deeper primary/accent for dark mode blob */
+}
+
+
+.auth-bg::after {
+  content: '';
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  /* Blob 2 uses accent-100 and primary-100 for another very light blob */
+  background: linear-gradient(135deg, var(--accent-100), var(--primary-100));
+  filter: blur(100px);
+  border-radius: 50%;
+  bottom: -250px;
+  right: -250px;
+  z-index: 0;
+  animation: blob 12s ease-in-out infinite alternate-reverse;
+}
+
+/* Dark mode adjustment for auth blob 2 */
+.dark .auth-bg::after {
+  background: linear-gradient(135deg, var(--accent-600), var(--primary-600));
+  /* Deeper accent/primary for dark mode blob */
+}
+
+/* ============================================
+   FORM SPECIFIC
+   ============================================ */
+
+/* Hide Spin Buttons (as provided) */
+input[type='number']::-webkit-outer-spin-button,
+input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}
+
+/* Date/Time Inputs */
+input[type='date'],
+input[type='time'],
+input[type='datetime-local'] {
+  @apply input-field;
+}
+
+/* File Input */
+input[type='file'] {
+  @apply input-field;
+  padding: 0.5rem;
+  /* Adjust padding for file input */
+}
+
+input[type='file']::file-selector-button {
+  @apply btn-secondary;
+  /* Use secondary button style for file selector */
+  margin-right: 1rem;
+  border: none;
+  padding: 0.5rem 1rem;
+  font-size: 0.875rem;
+}
+
+/* Range Input */
+input[type='range'] {
+  @apply w-full h-2 rounded-full appearance-none cursor-pointer;
+  background: var(--bg-tertiary);
+}
+
+.dark input[type='range'] {
+  background: var(--slate-700);
+  /* Darker background for range in dark mode */
+}
+
+
+input[type='range']::-webkit-slider-thumb {
+  @apply w-5 h-5 rounded-full appearance-none cursor-pointer;
+  background: var(--primary-500);
+  border: 3px solid white;
+  box-shadow: var(--shadow-md);
+}
+
+/* Checkbox & Radio */
+input[type='checkbox'],
+input[type='radio'] {
+  @apply w-5 h-5;
+  accent-color: var(--primary-500);
+  /* Primary color for checked state */
+  cursor: pointer;
+  border: 1.5px solid var(--border-default);
+  /* Add a subtle border */
+  transition: all var(--duration-fast) var(--ease-default);
+}
+
+input[type='checkbox']:focus,
+input[type='radio']:focus {
+  outline: 2px solid var(--primary-500);
+  outline-offset: 2px;
+}
+
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .dashboard-card {
+    box-shadow: none;
+    border: 1px solid #ddd;
+    break-inside: avoid;
+  }
+
+  .btn {
+    box-shadow: none;
+  }
+
+  a {
+    color: black;
+    text-decoration: underline;
+  }
+
+  .auth-bg::before,
+  .auth-bg::after {
+    display: none;
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
+/* Reduced Motion (as provided) */
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .auth-bg::before,
+  .auth-bg::after {
+    animation: none;
+  }
+}
+
+/* High Contrast (as provided, with updated variable names) */
+@media (prefers-contrast: high) {
+  :root {
+    --border-default: #000;
+    --text-muted: #333;
+  }
+
+  .btn-primary,
+  .btn-success,
+  .btn-danger,
+  .btn-warning {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Focus Visible (as provided) */
+.js-focus-visible :focus:not(.focus-visible) {
+  outline: none;
+}
+
+/* Screen Reader Only (as provided) */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  padding: inherit;
+  margin: inherit;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+/* ============================================
+   RESPONSIVE ADJUSTMENTS
+   ============================================ */
+
+@media (max-width: 640px) {
+  .modal {
+    max-width: 95vw;
+    max-height: 95vh;
+    border-radius: var(--radius-xl);
+  }
+
+  .modal-header,
+  .modal-body,
+  .modal-footer {
+    padding: 1rem;
+  }
+
+  .btn {
+    padding: 0.625rem 1rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-lg {
+    padding: 0.875rem 1.5rem;
+  }
+
+  .ams-table th,
+  .ams-table td {
+    padding: 0.75rem 1rem;
+  }
+
+  h1 {
+    font-size: 2rem;
+  }
+
+  h2 {
+    font-size: 1.75rem;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* Theme transition helper: applied briefly while toggling theme to animate colors */
+.theme-transition,
+.theme-transition * {
+  transition: background-color 280ms var(--ease-default), color 280ms var(--ease-default), border-color 280ms var(--ease-default), box-shadow 280ms var(--ease-default), fill 280ms var(--ease-default), stroke 280ms var(--ease-default);
+}
+
+
+/* ==================================================
+   Global dark-mode overrides for common Tailwind
+   utility classes so components that use hard-coded
+   utility classes will still follow CSS variables.
+   These provide a broad, safe mapping and use
+   !important only where necessary to override
+   utility class specificity.
+   ================================================== */
+.dark .bg-white {
+  background-color: var(--surface-primary) !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: var(--bg-primary) !important;
+}
+
+.dark .bg-slate-100 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .bg-slate-200 {
+  background-color: var(--bg-tertiary) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--bg-primary) !important;
+}
+
+.dark .text-slate-800,
+.dark .text-gray-800,
+.dark .text-gray-900,
+.dark .text-gray-700,
+.dark .text-gray-800 {
+  color: var(--text-primary) !important;
+}
+
+.dark .text-slate-500,
+.dark .text-gray-500,
+.dark .text-gray-600 {
+  color: var(--text-secondary) !important;
+}
+
+.dark .text-slate-400,
+.dark .text-gray-400 {
+  color: var(--text-tertiary) !important;
+}
+
+.dark .border-slate-200,
+.dark .border-gray-200,
+.dark .border-slate-100,
+.dark .border-gray-100 {
+  border-color: var(--border-default) !important;
+}
+
+.dark .border-slate-50,
+.dark .border-gray-50 {
+  border-color: var(--border-light) !important;
+}
+
+.dark .bg-transparent {
+  background-color: transparent;
+}
+
+.dark .shadow,
+.dark .shadow-sm,
+.dark .shadow-md,
+.dark .shadow-lg,
+.dark .shadow-xl {
+  box-shadow: var(--shadow-card) !important;
+}
+
+.dark .h-16.bg-white {
+  background-color: var(--surface-primary) !important;
+}
+
+/* Buttons and controls */
+.dark .btn-secondary {
+  background: var(--surface-primary) !important;
+  color: var(--text-secondary) !important;
+  border-color: var(--border-default) !important;
+}
+
+.dark .btn-primary {
+  box-shadow: var(--shadow-md), var(--shadow-primary) !important;
+}
+
+/* Utility helpers that are often used in layout */
+.dark .bg-slate-800,
+.dark .bg-slate-900 {
+  background-color: var(--bg-primary) !important;
+}
+
+.dark .bg-slate-700 {
+  background-color: var(--bg-secondary) !important;
+}
+
+/* Ensure input backgrounds follow variables */
+.dark input,
+.dark textarea,
+.dark select {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* Toaster/alerts */
+.dark .rounded-xl.border-slate-100 {
+  border-color: var(--border-default) !important;
+  box-shadow: var(--shadow-xl) !important;
+}
+
+/* Additional broad overrides for Tailwind classes commonly used for white surfaces */
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-slate-50,
+.dark .bg-slate-100 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .border-gray-200,
+.dark .border-gray-100 {
+  border-color: var(--border-default) !important;
+}
+
+.dark .divide-gray-200,
+.dark .divide-slate-200 {
+  border-color: var(--border-default) !important;
+}
+
+.dark .bg-white\/50,
+.dark .bg-white\/60,
+.dark .bg-white\/70 {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Ensure tables and table rows that used white fallback to transparent/dark surfaces */
+.dark table,
+.dark thead,
+.dark tbody,
+.dark tr,
+.dark td,
+.dark th {
+  background-color: transparent;
+  color: var(--text-primary);
+}
+
+/* Buttons that used bright text on white backgrounds */
+.dark .text-orange-600 {
+  color: var(--warning-600) !important;
+}
+
+.dark .text-rose-500 {
+  color: var(--danger-500) !important;
+}
+
+/* Pale blues/greens used for info cards and form helper boxes */
+.dark .bg-blue-50,
+.dark .bg-indigo-50,
+.dark .bg-green-50,
+.dark .bg-primary-50,
+.dark .bg-emerald-50,
+.dark .from-blue-50,
+.dark .to-indigo-50 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .border-blue-200,
+.dark .border-green-200,
+.dark .border-indigo-200,
+.dark .border-primary-200 {
+  border-color: var(--border-default) !important;
+}
+
+/* Yellow status cards and highlights */
+.dark .bg-yellow-50,
+.dark .bg-yellow-100,
+.dark .bg-yellow-200 {
+  background-color: var(--bg-secondary) !important;
+}
+
+.dark .border-yellow-200,
+.dark .border-yellow-100 {
+  border-color: var(--border-default) !important;
+}
+
+.dark .text-yellow-800,
+.dark .text-yellow-700 {
+  color: var(--text-primary) !important;
+}
+
+
+/* Rounded pale blocks (e.g., info boxes, remark areas) */
+.dark .rounded-lg.bg-white,
+.dark .rounded-lg.bg-blue-50,
+.dark .rounded-lg.bg-gray-50,
+.dark .rounded-lg.bg-green-50 {
+  background: var(--surface-primary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border-default) !important;
+}
+
+/* Ensure textarea uses dark background */
+.dark textarea {
+  background: var(--bg-secondary) !important;
+  color: var(--text-primary) !important;
+}
+
+
+/* Replace light gradients used for headers/cards with dark surface in dark mode */
+.dark [class*="bg-gradient-to-"] {
+  background-image: none !important;
+  background: var(--surface-primary) !important;
+  border-color: var(--border-default) !important;
+}
