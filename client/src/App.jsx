@@ -13,6 +13,7 @@ import NotificationBell from './components/common/NotificationBell';
 import Footer from './components/common/Footer';
 import Loader from './components/common/Loader';
 import ChatWidget from './components/common/ChatWidget';
+import ProfileCompletion from './components/common/ProfileCompletion';
 import { useTranslation } from 'react-i18next';
 import ProtectedRoute, { ResidentRoute, StaffRoute, AdminRoute } from './components/common/ProtectedRoute';
 import ThemeToggle from './components/common/ThemeToggle';
@@ -117,20 +118,21 @@ const AppLayout = ({ children }) => {
     );
   }
 
-  // Dashboard Layout with Sidebar
-  return (
-    <div className="flex h-screen bg-bg-primary overflow-hidden">
-      {/* 1. Sidebar - Fixed on the left */}
-      <Sidebar />
+    // Dashboard Layout with Sidebar (only if profile completed)
+    const showSetup = user && !user.isProfileCompleted && user.role !== 'admin';
 
+    return (
+      <>
+        {showSetup && <ProfileCompletion />}
+        <div className={`flex h-screen bg-bg-primary overflow-hidden ${showSetup ? 'blur-[8px] pointer-events-none select-none grayscale-[0.05]' : 'animate-fade-in'}`}>
+          {/* 1. Sidebar - Fixed on the left */}
+      <Sidebar tone="dark" />
+ 
       {/* 2. Main Area - Scrolls on the right */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header (Inside Content Area) */}
-        <header className="sticky top-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-8 shrink-0 z-30 transition-all duration-300 shadow-sm">
-          <h2 className="text-slate-800 font-bold text-lg capitalize tracking-tight">
-            {headerText}
-          </h2>
-
+        <header className="sticky top-0 h-16 bg-white/80 backdrop-blur-md border-b border-slate-200/60 flex items-center justify-between px-8 shrink-0 z-30 shadow-sm transition-all">
+          <h2 className="text-slate-800 font-bold text-lg capitalize tracking-tight">{headerText}</h2>
           <div className="flex items-center gap-4">
             <LanguageSelector />
             <NotificationBell />
@@ -142,16 +144,13 @@ const AppLayout = ({ children }) => {
             </div>
           </div>
         </header>
-
-        {/* Dynamic Page Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
-          {children}
-        </main>
-
-        {/* Fixed Footer */}
-        <Footer />
+          <main className="flex-1 overflow-y-auto p-4 md:p-8 custom-scrollbar">
+            {children}
+          </main>
+          <Footer />
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

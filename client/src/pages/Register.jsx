@@ -15,7 +15,7 @@ import {
   ExclamationCircleIcon,
   CheckIcon,
 } from '@heroicons/react/24/outline';
-// GoogleButton removed per design: sign-in with Google disabled
+import GoogleButton from '../components/common/GoogleButton';
 import { COMPLAINT_CATEGORIES, STAFF_EXPERTISE } from '../utils/constants';
 
 import { useTranslation } from 'react-i18next';
@@ -209,6 +209,15 @@ const Register = () => {
             <form onSubmit={handleSubmit} className="space-y-5">
               {step === 1 ? (
                 <div className="space-y-5 animate-fade-in">
+                  <div className="hover:scale-[1.02] transition-transform active:scale-[0.98] mb-6">
+                    <GoogleButton />
+                  </div>
+
+                  <div className="relative my-6">
+                    <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-slate-100"></div></div>
+                    <div className="relative flex justify-center text-xs uppercase"><span className="bg-white px-4 text-slate-400 font-medium tracking-widest">{t('or_continue_with')}</span></div>
+                  </div>
+
                   <div>
                     <label className="form-label text-slate-700">{t('full_name')}</label>
                     <div className="relative group">

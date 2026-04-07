@@ -226,8 +226,7 @@ export const updateProfile = async (req, res, next) => {
     console.debug('[updateProfile] body keys:', Object.keys(req.body || {}));
     console.debug('[updateProfile] has file:', !!req.file, req.file ? { originalname: req.file.originalname, size: req.file.size, mimetype: req.file.mimetype } : null);
 
-    const { name, phone, flatNumber, expertise } = req.body;
-
+    const { name, phone, flatNumber, expertise, role } = req.body;
     const user = await User.findById(req.user.id);
 
     if (!user) {
@@ -237,9 +236,29 @@ export const updateProfile = async (req, res, next) => {
       });
     }
 
+    // Allow role selection only during initial setup
+    if (!user.isProfileCompleted && role) {
+      if (role === USER_ROLES.RESIDENT || role === USER_ROLES.STAFF) {
+        user.role = role;
+        console.debug('[updateProfile] Updated role to:', role);
+      }
+    }
+
     // Update allowed fields
     if (name) user.name = name;
     if (phone) user.phone = phone;
+
+    // Check if profile completion requirements are met
+    const canCompleteProfile = () => {
+      const hasBasicInfo = user.name && user.phone;
+      if (!hasBasicInfo) return false;
+      
+      if (user.role === USER_ROLES.RESIDENT) return !!flatNumber || !!user.flatNumber;
+      if (user.role === USER_ROLES.STAFF) return (expertise && expertise.length > 0) || (user.expertise && user.expertise.length > 0);
+      return true;
+    };
+
+    console.debug('[updateProfile] canCompleteProfile:', canCompleteProfile(), 'currentUserProfileCompleted:', user.isProfileCompleted);
 
     // Update role-specific fields
     if (user.role === USER_ROLES.RESIDENT && flatNumber) {
@@ -248,6 +267,12 @@ export const updateProfile = async (req, res, next) => {
 
     if (user.role === USER_ROLES.STAFF && expertise) {
       user.expertise = Array.isArray(expertise) ? expertise : [expertise];
+    }
+
+    // Complete profile if it's the first time
+    if (!user.isProfileCompleted && canCompleteProfile()) {
+      user.isProfileCompleted = true;
+      console.debug('[updateProfile] Setting isProfileCompleted to true');
     }
 
     // Handle profile image upload
@@ -450,11 +475,12 @@ export const googleAuth = async (req, res, next) => {
       name: profile.name || 'Google User',
       email,
       role: USER_ROLES.RESIDENT,
-      flatNumber: 'Google User',
+      flatNumber: 'G-PENDING',
       phone: undefined,
       googleId: profile.googleId,
       avatar: profile.avatar,
       isVerified: true,
+      isProfileCompleted: false,
     };
 
     user = await User.create(newUserData);

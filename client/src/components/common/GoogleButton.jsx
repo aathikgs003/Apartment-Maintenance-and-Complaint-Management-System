@@ -56,7 +56,7 @@ const GoogleButton = ({ className }) => {
           type: 'standard',
           theme: 'outline',
           size: 'large',
-          text: 'signin_with',
+          text: 'continue_with',
         });
       }
     } catch (err) {

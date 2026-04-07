@@ -125,6 +125,10 @@ const userSchema = new mongoose.Schema(
       default: true,
       index: true,
     },
+    isProfileCompleted: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true, // Adds createdAt and updatedAt
@@ -211,7 +215,7 @@ userSchema.pre('save', function (next) {
   if (this.role === USER_ROLES.RESIDENT && !this.flatNumber) {
     // For Google-created users, default flatNumber
     if (this.googleId) {
-      this.flatNumber = 'Google User';
+      this.flatNumber = 'G-PENDING';
     } else {
       const error = new Error('Flat number is required for residents');
       error.name = 'ValidationError';
@@ -285,9 +289,10 @@ userSchema.methods.getPublicProfile = function () {
     phone: this.phone,
     expertise: this.expertise,
     isActive: this.isActive,
-    profileImage: this.profileImage,
+    profileImage: this.profileImage || this.avatar,
     avatar: this.avatar || this.profileImage,
     isVerified: this.isVerified,
+    isProfileCompleted: this.isProfileCompleted,
     createdAt: this.createdAt,
     lastLogin: this.lastLogin,
   };
