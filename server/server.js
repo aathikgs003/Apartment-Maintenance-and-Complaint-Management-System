@@ -307,6 +307,12 @@ const startServer = async () => {
       console.log('='.repeat(50));
     });
 
+    // Initialize Socket.io
+    import('./utils/socket.js').then(({ initSocket }) => {
+      initSocket(server);
+      console.log('🔌 Socket.io initialized');
+    }).catch(err => console.error('Failed to init socket', err));
+
     // Setup graceful shutdown handlers
     setupUnhandledRejectionHandler(server);
     setupSigtermHandler(server);

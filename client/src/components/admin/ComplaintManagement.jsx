@@ -503,18 +503,36 @@ const ComplaintManagement = () => {
                               </button>
                             </>
                           )}
-                          {['Completed', 'Payment Received', 'Payment Completed'].includes(complaint.status) && (
-                            <button
-                              onClick={() => {
-                                setSelectedComplaint(complaint);
-                                setShowCloseModal(true);
-                              }}
-                              className="text-emerald-600 hover:text-emerald-900 p-1 hover:bg-emerald-50 rounded transition-colors"
-                              title="Close Complaint"
-                            >
-                              <CheckCircleIcon className="h-5 w-5" />
-                            </button>
-                          )}
+                          {/* Close button — visible for any non-closed complaint, enabled only after payment */}
+                          {!['Pending', 'Assigned', 'In Progress', 'Closed'].includes(complaint.status) && (() => {
+                            // Determine if closing is allowed:
+                            // - "Completed" with no payment mode or free service
+                            // - "Payment Received"  (offline payment done)
+                            // - "Payment Completed" (online payment done)
+                            const canClose = ['Payment Received', 'Payment Completed'].includes(complaint.status) ||
+                              (complaint.status === 'Completed' && !['Payment Pending'].includes(complaint.status));
+
+                            return canClose ? (
+                              <button
+                                onClick={() => {
+                                  setSelectedComplaint(complaint);
+                                  setShowCloseModal(true);
+                                }}
+                                className="text-emerald-600 hover:text-emerald-900 p-1 hover:bg-emerald-50 rounded transition-colors"
+                                title="Close Complaint"
+                              >
+                                <CheckCircleIcon className="h-5 w-5" />
+                              </button>
+                            ) : (
+                              <button
+                                disabled
+                                title="Cannot close — payment not yet received"
+                                className="text-slate-300 p-1 rounded cursor-not-allowed"
+                              >
+                                <CheckCircleIcon className="h-5 w-5" />
+                              </button>
+                            );
+                          })()}
                           <button
                             onClick={() => handleDeleteComplaint(complaint._id)}
                             className="text-rose-600 hover:text-rose-900 p-1 hover:bg-rose-50 rounded transition-colors"

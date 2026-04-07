@@ -5,8 +5,10 @@ node_modules/
 # ── Environment / Secrets (NEVER commit these) ────────────
 .env
 .env.*
-.env.example
 *.env.local
+*.env.development.local
+*.env.test.local
+*.env.production.local
 secret.env
 *.pem
 *.key
@@ -25,6 +27,10 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 debug.log*
+*_log.txt
+*_log_*.txt
+build_log.txt
+lint_log*.txt
 
 # ── Vite / bundler cache ──────────────────────────────────
 .vite/
@@ -39,21 +45,28 @@ coverage/
 .AppleDouble
 .LSOverride
 Thumbs.db
+ehthumbs.db
+Desktop.ini
 
 # ── IDEs and editors ──────────────────────────────────────
 .vscode/
 .idea/
 *.sublime-workspace
 *.sublime-project
+*.swp
+*.swo
 
-# ── Misc ──────────────────────────────────────────────────
+# ── Misc / Temp ───────────────────────────────────────────
 *.tgz
 .npm
 .pnp.cjs
 .pnp.loader.mjs
+git_status_out.txt
+test_forgot.js
 
 # ── Python (just in case) ─────────────────────────────────
 venv/
 ENV/
 __pycache__/
-
+*.py[cod]
+*$py.class

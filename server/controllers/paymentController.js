@@ -33,15 +33,16 @@ export const createOrder = async (req, res, next) => {
     }
 
     // Verify resident owns this complaint
-    if (complaint.residentId.toString() !== req.user.id) {
+    const userId = (req.user.id || req.user._id).toString();
+    if (complaint.residentId.toString() !== userId) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         message: 'Not authorized',
       });
     }
 
-    // Only allow order creation when complaint is completed and pay mode is Online
-    if (complaint.status !== COMPLAINT_STATUS.COMPLETED) {
+    // Only allow order creation when complaint is completed (or payment already pending) and pay mode is Online
+    if (complaint.status !== COMPLAINT_STATUS.COMPLETED && complaint.status !== COMPLAINT_STATUS.PAYMENT_PENDING) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: 'Payment can only be initiated after task completion',
@@ -55,6 +56,17 @@ export const createOrder = async (req, res, next) => {
       });
     }
 
+    // Check if Razorpay is properly configured
+    const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
+    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
+    if (!razorpayKeyId || razorpayKeyId === 'rzp_test_yourkeyid' ||
+        !razorpayKeySecret || razorpayKeySecret === 'yourtestkeysecret') {
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: 'Payment gateway is not configured. Please contact the administrator.',
+      });
+    }
+
     // Amount: use fixed amount or from request (in paise — 1 INR = 100 paise)
     const amountInPaise = req.body.amount || 50000; // Default ₹500
 
@@ -65,11 +77,20 @@ export const createOrder = async (req, res, next) => {
       notes: {
         complaintId: complaint._id.toString(),
         complaintNumber: complaint.complaintId,
-        residentId: req.user.id,
+        residentId: userId,
       },
     };
 
-    const order = await razorpay.orders.create(options);
+    let order;
+    try {
+      order = await razorpay.orders.create(options);
+    } catch (razorpayError) {
+      console.error('Razorpay order creation failed:', razorpayError);
+      return res.status(HTTP_STATUS.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: 'Failed to create payment order. Please try again later.',
+      });
+    }
 
     // Save order id to complaint
     complaint.payment = {
@@ -93,7 +114,7 @@ export const createOrder = async (req, res, next) => {
         orderId: order.id,
         amount: amountInPaise,
         currency: 'INR',
-        keyId: process.env.RAZORPAY_KEY_ID,
+        keyId: razorpayKeyId,
         complaintId: complaint._id,
         complaintNumber: complaint.complaintId,
       },
@@ -131,7 +152,8 @@ export const verifyPayment = async (req, res, next) => {
     }
 
     // Verify ownership
-    if (complaint.residentId._id.toString() !== req.user.id) {
+    const userId2 = (req.user.id || req.user._id).toString();
+    if (complaint.residentId._id.toString() !== userId2) {
       return res.status(HTTP_STATUS.FORBIDDEN).json({
         success: false,
         message: 'Not authorized',

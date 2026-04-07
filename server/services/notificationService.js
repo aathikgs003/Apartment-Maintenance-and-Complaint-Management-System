@@ -10,6 +10,7 @@ import {
   statusUpdateTemplate,
   complaintClosedTemplate,
 } from '../utils/emailTemplates.js';
+import { getIO, getSocketIdByUserId } from '../utils/socket.js';
 import {
   NOTIFICATION_TYPES,
   USER_ROLES,
@@ -40,6 +41,7 @@ export const createNotification = async (options) => {
     sendEmailNotification = true,
     metadata = {},
     staffPhone = '',
+    staffExpertise = [],
     residentPhone = '',
     flatNumber = '',
     priority = '',
@@ -74,6 +76,7 @@ export const createNotification = async (options) => {
         status,
         rating,
         staffPhone,
+        staffExpertise,
         residentPhone,
         flatNumber,
         priority,
@@ -87,7 +90,8 @@ export const createNotification = async (options) => {
 
     // Send email notification if enabled
     if (sendEmailNotification) {
-      await sendEmailForNotification(userId, type, {
+      // Best-effort: don't block socket emission
+      sendEmailForNotification(userId, type, {
         complaintId: complaintNumber,
         complaintNumber,
         staffName,
@@ -98,10 +102,24 @@ export const createNotification = async (options) => {
         deadline,
         remarks,
         staffPhone,
+        staffExpertise,
         residentPhone,
         flatNumber,
         priority,
-      });
+      }).catch(err => console.error('Failed email task:', err));
+    }
+
+    // Socket.io Real-time Push
+    try {
+      const io = getIO();
+      const socketId = getSocketIdByUserId(userId);
+      if (socketId) {
+        const realtimeFormatted = formatNotificationForRealTime(notification);
+        io.to(socketId).emit('new_notification', realtimeFormatted);
+        console.log(`📡 Pushed notification to socket for user ${userId}`);
+      }
+    } catch (socketErr) {
+      console.warn('Socket emit skipped:', socketErr.message);
     }
 
     console.log(`✅ Notification created: ${type} for user ${userId}`);
@@ -255,7 +273,7 @@ const sendEmailForNotification = async (userId, type, data) => {
         subject = `New Job Assigned: #${data.complaintNumber}`;
       } else {
         html = staffAssignedResidentTemplate(
-          { name: data.staffName, phone: data.staffPhone },
+          { name: data.staffName, phone: data.staffPhone, expertise: data.staffExpertise },
           { complaintId: data.complaintNumber, residentId: { name: user.name } }
         );
         subject = `Maintenance Staff Assigned - ${data.complaintNumber}`;
@@ -435,6 +453,7 @@ export const notifyStaffAssigned = async (complaint, staff, resident) => {
       complaintNumber: complaint.complaintId,
       staffName: staff.name,
       staffPhone: staff.phone,
+      staffExpertise: staff.expertise,
       category: complaint.category,
       deadline: complaint.deadline,
     });

@@ -29,11 +29,21 @@ api.interceptors.request.use(
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    // If the server returns 401 Unauthorized, the token might be expired
+    // Only clear token on 401 if the message indicates token expiry/invalidity
+    // NOT on role-based 403 or other 401s (e.g., wrong password)
     if (error.response && error.response.status === 401) {
-      // Clear local storage and redirect to login if necessary
-      localStorage.removeItem('token');
-      // Optional: window.location.href = '/login';
+      const message = error.response.data?.message || '';
+      const isTokenError =
+        message.toLowerCase().includes('token') ||
+        message.toLowerCase().includes('expired') ||
+        message.toLowerCase().includes('unauthorized') ||
+        message.toLowerCase().includes('no token');
+
+      if (isTokenError) {
+        localStorage.removeItem('token');
+        // Optional: redirect to login if needed
+        // window.location.href = '/login';
+      }
     }
     return Promise.reject(error);
   }

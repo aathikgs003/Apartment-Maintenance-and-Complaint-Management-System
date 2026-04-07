@@ -23,7 +23,7 @@ import { complaintRaisedTemplate } from '../utils/emailTemplates.js';
 // ====================================
 export const createComplaint = async (req, res, next) => {
   try {
-    const { category, description, priority } = req.body;
+    const { category, description, priority, preferredPayMode } = req.body;
 
     // Build complaint data
     const complaintData = {
@@ -31,6 +31,7 @@ export const createComplaint = async (req, res, next) => {
       category,
       description,
       priority: priority || 'Medium',
+      preferredPayMode: preferredPayMode || 'Offline',
     };
 
     // Preferred visit handling (required)
@@ -318,7 +319,7 @@ export const getComplaintById = async (req, res, next) => {
 // ====================================
 export const updateComplaint = async (req, res, next) => {
   try {
-    const { description, category, priority } = req.body;
+    const { description, category, priority, preferredPayMode } = req.body;
 
     let complaint = await Complaint.findById(req.params.id);
 
@@ -350,6 +351,7 @@ export const updateComplaint = async (req, res, next) => {
     // Update fields
     if (description) complaint.description = description;
     if (category) complaint.category = category;
+    if (preferredPayMode) complaint.preferredPayMode = preferredPayMode;
     if (priority && req.user.role === USER_ROLES.ADMIN) {
       complaint.priority = priority;
     }
@@ -527,7 +529,7 @@ export const assignComplaint = async (req, res, next) => {
 
     // Populate fields
     await complaint.populate('residentId', 'name email phone flatNumber');
-    await complaint.populate('assignedTo', 'name email phone');
+    await complaint.populate('assignedTo', 'name email phone expertise');
 
     // Send notifications to both staff and resident (using specialized helper)
     await notifyStaffAssigned(complaint, staff, complaint.residentId);
@@ -659,6 +661,8 @@ export const autoAssignComplaint = async (req, res, next) => {
       complaintId: complaint._id,
       complaintNumber: complaint.complaintId,
       staffName: selectedStaff.name,
+      staffPhone: selectedStaff.phone,
+      staffExpertise: selectedStaff.expertise,
     });
 
     res.status(HTTP_STATUS.OK).json({
@@ -683,7 +687,7 @@ export const autoAssignComplaint = async (req, res, next) => {
 // ====================================
 export const updateStatus = async (req, res, next) => {
   try {
-    const { status, remarks } = req.body;
+    const { status, remarks, amount } = req.body;
 
     // Validate status
     if (!status) {
@@ -739,6 +743,11 @@ export const updateStatus = async (req, res, next) => {
         ];
       }
 
+      // Save amount if work is completed
+      if (status === COMPLAINT_STATUS.COMPLETED && amount) {
+        complaint.payment.amount = parseInt(amount) * 100; // Store in paise (INR * 100)
+      }
+
       await complaint.save();
 
       // Update Staff Metrics if Completed
@@ -781,7 +790,7 @@ export const updateStatus = async (req, res, next) => {
     // Send notification to resident
     let notifType = NOTIFICATION_TYPES.STATUS_UPDATED;
     if (status === COMPLAINT_STATUS.COMPLETED) notifType = NOTIFICATION_TYPES.WORK_COMPLETED;
-    else if (status === COMPLAINT_STATUS.PAYMENT_PENDING) notifType = NOTIFICATION_TYPES.PAYMENT_INITIATED;
+    else if (status === COMPLAINT_STATUS.PAYMENT_PENDING) notifType = NOTIFICATION_TYPES.PAYMENT_PENDING;
     else if (status === COMPLAINT_STATUS.PAYMENT_RECEIVED) notifType = NOTIFICATION_TYPES.PAYMENT_RECEIVED;
     else if (status === COMPLAINT_STATUS.PAYMENT_COMPLETED) notifType = NOTIFICATION_TYPES.PAYMENT_COMPLETED;
 

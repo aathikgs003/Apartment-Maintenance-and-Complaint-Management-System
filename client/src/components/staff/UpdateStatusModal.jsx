@@ -10,11 +10,12 @@ import {
 } from '@heroicons/react/24/outline';
 
 const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
-  const [status, setStatus] = useState(complaint.status);
+  const [status, setStatus] = useState('');
   const [remarks, setRemarks] = useState('');
   const [proofImages, setProofImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [amount, setAmount] = useState('');
   const [errors, setErrors] = useState({});
 
   // Available status transitions based on current status and pay mode
@@ -22,7 +23,7 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
     const payMode = complaint.preferredPayMode || 'Offline';
     const statusMap = {
       Assigned: ['In Progress'],
-      'In Progress': ['In Progress', 'Completed'],
+      'In Progress': ['Completed'],
       // After completion — staff can move to payment pending (offline) or back to in-progress
       Completed: payMode === 'Offline'
         ? ['In Progress']
@@ -95,6 +96,10 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
       newErrors.proofImages = 'Please upload at least one proof image for completion';
     }
 
+    if (status === 'Completed' && !amount) {
+      newErrors.amount = 'Please enter the service amount (₹)';
+    }
+
     if (remarks.trim().length > 1000) {
       newErrors.remarks = 'Remarks cannot exceed 1000 characters';
     }
@@ -119,6 +124,9 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
       formData.append('status', status);
       if (remarks.trim()) {
         formData.append('remarks', remarks.trim());
+      }
+      if (status === 'Completed' && amount) {
+        formData.append('amount', amount);
       }
 
       // Append proof images
@@ -179,8 +187,8 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
               </div>
             </div>
 
-            {/* New Status and Remarks — Only if NOT waiting for payment */}
-            {complaint.status !== 'Payment Pending' && (
+            {/* New Status and Remarks — Only if NOT waiting for payment and NOT already completed */}
+            {complaint.status !== 'Payment Pending' && complaint.status !== 'Completed' && (
               <>
                 <div>
                   <label className="block text-sm font-bold text-slate-700 mb-2">
@@ -242,6 +250,41 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
                     <p className="text-xs font-bold text-slate-400">{remarks.length}/1000</p>
                   </div>
                 </div>
+
+                {/* Amount Input (only for Completion) */}
+                {status === 'Completed' && (
+                  <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                    <label className="block text-sm font-bold text-slate-700 mb-2">
+                      Service Amount (₹) <span className="text-rose-500">*</span>
+                    </label>
+                    <div className="relative">
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <span className="text-slate-500 font-bold">₹</span>
+                      </div>
+                      <input
+                        type="number"
+                        value={amount}
+                        onChange={(e) => {
+                          setAmount(e.target.value);
+                          if (errors.amount) setErrors(prev => ({ ...prev, amount: '' }));
+                        }}
+                        placeholder="0.00"
+                        className={`w-full pl-10 pr-4 py-3 border rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500/50 font-black text-lg transition-all ${errors.amount ? 'border-rose-300 ring-rose-200 bg-rose-50' : 'border-slate-200 focus:border-sky-500 bg-white'
+                          }`}
+                        min="0"
+                      />
+                    </div>
+                    {errors.amount && (
+                      <p className="mt-2 text-sm text-rose-600 flex items-center font-bold">
+                        <ExclamationCircleIcon className="h-4 w-4 mr-1.5" />
+                        {errors.amount}
+                      </p>
+                    )}
+                    <p className="mt-2 text-xs text-slate-400 font-medium italic">
+                      This is the amount the resident will see and pay.
+                    </p>
+                  </div>
+                )}
               </>
             )}
 
@@ -354,6 +397,19 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
               </div>
             )}
 
+            {/* Payment Action — Online Payment Status */}
+            {complaint.status === 'Completed' && complaint.preferredPayMode === 'Online' && (
+              <div className="bg-sky-50 border border-sky-200 p-5 rounded-2xl animate-in fade-in slide-in-from-top-1 text-center">
+                <div className="w-12 h-12 bg-sky-500 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <span className="text-white text-xl">💳</span>
+                </div>
+                <p className="font-bold text-sky-900">Online Payment Pending</p>
+                <p className="text-sm text-sky-600 mt-2">
+                  The resident has been notified to pay online. The system will automatically update the status once the payment is verified.
+                </p>
+              </div>
+            )}
+
             {/* Payment Action — Confirm Offline Payment Received */}
             {complaint.status === 'Payment Pending' && complaint.preferredPayMode === 'Offline' && (
               <div className="bg-teal-50 border border-teal-200 p-5 rounded-2xl animate-in fade-in slide-in-from-top-1">
@@ -401,10 +457,10 @@ const UpdateStatusModal = ({ complaint, onClose, onSuccess }) => {
 
           {/* Action Buttons */}
           <div className="mt-8 flex flex-col sm:flex-row gap-4 pt-6 border-t border-slate-100">
-            {complaint.status !== 'Payment Pending' && (
+            {complaint.status !== 'Payment Pending' && complaint.status !== 'Completed' && (
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || !status}
                 className="flex-1 bg-sky-600 text-white px-6 py-3.5 rounded-xl font-bold hover:bg-sky-700 hover:shadow-lg hover:shadow-sky-200 active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-sky-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
                 {loading ? (

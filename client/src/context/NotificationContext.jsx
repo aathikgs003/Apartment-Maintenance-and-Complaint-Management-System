@@ -1,7 +1,7 @@
 import { createContext, useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
-
+import { io } from 'socket.io-client';
 export const NotificationContext = createContext();
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
@@ -43,19 +43,42 @@ export const NotificationProvider = ({ children }) => {
     }
   }, [isAuthenticated]);
 
-  // Initial fetch when user logs in
+  // Initial fetch when user logs in and Setup WebSockets
   useEffect(() => {
-    if (isAuthenticated) {
+    let socket;
+
+    if (isAuthenticated && user) {
       fetchNotifications();
-      
-      // Setup polling for new notifications every 60 seconds
-      const interval = setInterval(fetchUnreadCount, 60000);
-      return () => clearInterval(interval);
+
+      // Connect specifically to our local/API backend with socket
+      // Using generic logic assuming window.location or API URL origin
+      const socketUrl = API_URL.replace('/api', '');
+      socket = io(socketUrl, {
+        withCredentials: true,
+      });
+
+      socket.on('connect', () => {
+        socket.emit('register', user._id || user.id);
+      });
+
+      socket.on('new_notification', (newNotif) => {
+        // Sound or any visual feedback can go here
+        setNotifications((prev) => [newNotif, ...prev]);
+        setUnreadCount((prev) => prev + 1);
+      });
+
+      // Keeping a slow slow polling fallback just in case socket disconnects (e.g. 5 minutes)
+      const interval = setInterval(fetchUnreadCount, 300000);
+
+      return () => {
+        clearInterval(interval);
+        if (socket) socket.disconnect();
+      };
     } else {
       setNotifications([]);
       setUnreadCount(0);
     }
-  }, [isAuthenticated, fetchNotifications, fetchUnreadCount]);
+  }, [isAuthenticated, user, fetchNotifications, fetchUnreadCount]);
 
   // 2. Mark Single as Read
   const markAsRead = async (notificationId) => {

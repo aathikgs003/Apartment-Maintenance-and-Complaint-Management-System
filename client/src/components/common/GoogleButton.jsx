@@ -20,14 +20,18 @@ const GoogleButton = ({ className }) => {
     script.onload = () => setReady(true);
     document.body.appendChild(script);
 
-    return () => {};
+    return () => { };
   }, []);
+
+  const loginRef = useRef(googleLogin);
+  useEffect(() => {
+    loginRef.current = googleLogin;
+  }, [googleLogin]);
 
   useEffect(() => {
     if (!ready) return;
     const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
     console.debug('GSI init - VITE_GOOGLE_CLIENT_ID =', clientId);
-    console.debug('GSI init origin:', window.location.origin, 'clientId:', import.meta.env.VITE_GOOGLE_CLIENT_ID);
     if (!clientId) {
       console.warn('VITE_GOOGLE_CLIENT_ID is not set');
       return;
@@ -38,10 +42,10 @@ const GoogleButton = ({ className }) => {
       window.google.accounts.id.initialize({
         client_id: clientId,
         callback: async (response) => {
-            // Debug: log returned credential presence
-            console.debug('GSI callback response present:', !!response, response && { hasCredential: !!response.credential });
-          if (response && response.credential) {
-            await googleLogin(response.credential);
+          // Debug: log returned credential presence
+          console.debug('GSI callback response present:', !!response, response && { hasCredential: !!response.credential });
+          if (response && response.credential && loginRef.current) {
+            await loginRef.current(response.credential);
           }
         },
       });
@@ -58,7 +62,7 @@ const GoogleButton = ({ className }) => {
     } catch (err) {
       console.error('GSI initialization error', err);
     }
-  }, [ready, googleLogin]);
+  }, [ready]);
 
   return (
     <div className={className}>

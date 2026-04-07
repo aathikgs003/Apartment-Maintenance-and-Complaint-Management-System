@@ -97,7 +97,7 @@ const ComplaintDetails = () => {
 
   const residentImages = normalizeImageArray(complaint.images);
   const proofImages = normalizeImageArray(complaint.proofImages);
-  const displayedImages = user?.role === 'resident' ? residentImages : [...residentImages, ...proofImages];
+  const displayedImages = residentImages;
 
   const getStatusColor = (status) => {
     const colors = {
@@ -188,11 +188,10 @@ const ComplaintDetails = () => {
                     {complaint.priority} Priority
                   </span>
                   {complaint.preferredPayMode && (
-                    <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold backdrop-blur-md border ${
-                      complaint.preferredPayMode === 'Online'
-                        ? 'bg-sky-400/30 border-sky-200/30 text-sky-50'
-                        : 'bg-slate-400/30 border-slate-200/30 text-slate-50'
-                    }`}>
+                    <span className={`inline-flex items-center px-3 py-1 rounded-lg text-sm font-bold backdrop-blur-md border ${complaint.preferredPayMode === 'Online'
+                      ? 'bg-sky-400/30 border-sky-200/30 text-sky-50'
+                      : 'bg-slate-400/30 border-slate-200/30 text-slate-50'
+                      }`}>
                       {complaint.preferredPayMode === 'Online' ? '💳' : '💵'} {complaint.preferredPayMode}
                     </span>
                   )}
@@ -204,9 +203,9 @@ const ComplaintDetails = () => {
                   className={`inline-flex items-center px-4 py-1.5 rounded-full text-sm font-black uppercase tracking-wide border-2 bg-white ${complaint.status === 'Completed' || complaint.status === 'Payment Completed' ? 'text-emerald-600 border-emerald-500' :
                     complaint.status === 'In Progress' ? 'text-indigo-600 border-indigo-500' :
                       complaint.status === 'Assigned' ? 'text-sky-600 border-sky-500' :
-                      complaint.status === 'Payment Pending' ? 'text-orange-600 border-orange-500' :
-                      complaint.status === 'Payment Received' ? 'text-teal-600 border-teal-500' :
-                        'text-amber-600 border-amber-500'
+                        complaint.status === 'Payment Pending' ? 'text-orange-600 border-orange-500' :
+                          complaint.status === 'Payment Received' ? 'text-teal-600 border-teal-500' :
+                            'text-amber-600 border-amber-500'
                     }`}
                 >
                   {complaint.status}
@@ -255,30 +254,24 @@ const ComplaintDetails = () => {
                 </div>
               ) : (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                  {displayedImages.map((image, i) => {
-                    const isProof = user?.role === 'resident' ? false : i >= residentImages.length;
-                    return (
-                      <div
-                        key={i}
-                        className="relative group cursor-pointer overflow-hidden rounded-2xl shadow-sm border border-slate-100"
-                        onClick={() => setSelectedImage(image)}
-                      >
-                        <img
-                          src={image}
-                          alt={`Complaint ${i + 1}`}
-                          onError={(e) => {
-                            e.currentTarget.onerror = null;
-                            e.currentTarget.src = '/images/image-placeholder.png';
-                          }}
-                          className="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110"
-                        />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
-                        {isProof && (
-                          <span className="absolute top-2 left-2 bg-emerald-500 text-white text-[10px] uppercase font-black px-2 py-1 rounded-md shadow-sm">Proof</span>
-                        )}
-                      </div>
-                    );
-                  })}
+                  {displayedImages.map((image, i) => (
+                    <div
+                      key={i}
+                      className="relative group cursor-pointer overflow-hidden rounded-2xl shadow-sm border border-slate-100"
+                      onClick={() => setSelectedImage(image)}
+                    >
+                      <img
+                        src={image}
+                        alt={`Attached Image ${i + 1}`}
+                        onError={(e) => {
+                          e.currentTarget.onerror = null;
+                          e.currentTarget.src = '/images/image-placeholder.png';
+                        }}
+                        className="w-full h-32 object-cover transition-transform duration-500 group-hover:scale-110"
+                      />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

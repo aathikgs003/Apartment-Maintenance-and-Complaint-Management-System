@@ -6,6 +6,7 @@ import {
   COMPLAINT_STATUS_ARRAY,
   USER_ROLES_ARRAY,
   STAFF_EXPERTISE,
+  PAYMENT_MODE,
   HTTP_STATUS,
 } from '../config/constants.js';
 
@@ -236,6 +237,11 @@ export const validateCreateComplaint = [
       return true;
     }),
 
+  body('preferredPayMode')
+    .optional()
+    .isIn(Object.values(PAYMENT_MODE))
+    .withMessage('Invalid payment mode selected'),
+
   handleValidation,
 ];
 
@@ -289,6 +295,11 @@ export const validateUpdateComplaint = [
       }
       return true;
     }),
+
+  body('preferredPayMode')
+    .optional()
+    .isIn(Object.values(PAYMENT_MODE))
+    .withMessage('Invalid payment mode selected'),
 
   handleValidation,
 ];
@@ -550,24 +561,24 @@ export default {
   validateLogin,
   validateUpdateProfile,
   validateChangePassword,
-  
+
   // Complaint
   validateCreateComplaint,
   validateUpdateComplaint,
   validateAssignComplaint,
   validateUpdateStatus,
   validateRating,
-  
+
   // User
   validateCreateUser,
   validateUpdateUser,
   validateResetPassword,
-  
+
   // Common
   validateMongoId,
   validatePagination,
   validateDateRange,
-  
+
   // Sanitizers
   sanitizeInput,
   sanitizeQuery,

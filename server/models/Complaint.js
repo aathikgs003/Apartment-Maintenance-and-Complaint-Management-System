@@ -228,10 +228,14 @@ complaintSchema.index({ residentId: 1, status: 1 });
 // Check if complaint is overdue
 complaintSchema.virtual('isOverdue').get(function () {
   if (!this.deadline) return false;
-  if (
-    this.status === COMPLAINT_STATUS.COMPLETED ||
-    this.status === COMPLAINT_STATUS.CLOSED
-  ) {
+  const finishedStatuses = [
+    COMPLAINT_STATUS.COMPLETED,
+    COMPLAINT_STATUS.PAYMENT_PENDING,
+    COMPLAINT_STATUS.PAYMENT_RECEIVED,
+    COMPLAINT_STATUS.PAYMENT_COMPLETED,
+    COMPLAINT_STATUS.CLOSED,
+  ];
+  if (finishedStatuses.includes(this.status)) {
     return false;
   }
   return new Date() > this.deadline;
@@ -308,13 +312,19 @@ complaintSchema.pre('save', function (next) {
 
 // Check and update delay status
 complaintSchema.pre('save', function (next) {
-  if (
-    this.deadline &&
-    this.status !== COMPLAINT_STATUS.COMPLETED &&
-    this.status !== COMPLAINT_STATUS.CLOSED
-  ) {
+  const finishedStatuses = [
+    COMPLAINT_STATUS.COMPLETED,
+    COMPLAINT_STATUS.PAYMENT_PENDING,
+    COMPLAINT_STATUS.PAYMENT_RECEIVED,
+    COMPLAINT_STATUS.PAYMENT_COMPLETED,
+    COMPLAINT_STATUS.CLOSED,
+  ];
+
+  if (this.deadline && !finishedStatuses.includes(this.status)) {
     this.isDelayed = new Date() > this.deadline;
   }
+  // Once the work is completed (and beyond), we stop updating isDelayed.
+  // It retains its value (true if it was completed late, false if completed on time).
   next();
 });
 
@@ -429,9 +439,16 @@ complaintSchema.statics.findByStatus = function (status) {
 
 // Get delayed complaints
 complaintSchema.statics.findDelayed = function () {
+  const finishedStatuses = [
+    COMPLAINT_STATUS.COMPLETED,
+    COMPLAINT_STATUS.PAYMENT_PENDING,
+    COMPLAINT_STATUS.PAYMENT_RECEIVED,
+    COMPLAINT_STATUS.PAYMENT_COMPLETED,
+    COMPLAINT_STATUS.CLOSED,
+  ];
   return this.find({
     isDelayed: true,
-    status: { $nin: [COMPLAINT_STATUS.COMPLETED, COMPLAINT_STATUS.CLOSED] },
+    status: { $nin: finishedStatuses },
   }).sort({ deadline: 1 });
 };
 
@@ -557,14 +574,19 @@ complaintSchema.statics.getComplaintsTrend = async function (days = 30) {
 // Update delayed status for all overdue complaints
 complaintSchema.statics.updateDelayedStatus = async function () {
   const now = new Date();
+  const finishedStatuses = [
+    COMPLAINT_STATUS.COMPLETED,
+    COMPLAINT_STATUS.PAYMENT_PENDING,
+    COMPLAINT_STATUS.PAYMENT_RECEIVED,
+    COMPLAINT_STATUS.PAYMENT_COMPLETED,
+    COMPLAINT_STATUS.CLOSED,
+  ];
 
   const result = await this.updateMany(
     {
       deadline: { $lt: now },
       isDelayed: false,
-      status: {
-        $nin: [COMPLAINT_STATUS.COMPLETED, COMPLAINT_STATUS.CLOSED],
-      },
+      status: { $nin: finishedStatuses },
     },
     {
       $set: { isDelayed: true },

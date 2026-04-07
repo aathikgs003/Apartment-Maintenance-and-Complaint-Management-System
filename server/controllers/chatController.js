@@ -5,7 +5,7 @@ import { COMPLAINT_CATEGORIES } from '../config/constants.js';
 
 // Hugging Face Model
 const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.2';
-const HF_API_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}`;
+const HF_API_URL = `https://router.huggingface.co/models/${HF_MODEL}`;
 
 /**
  * Handle chat messages

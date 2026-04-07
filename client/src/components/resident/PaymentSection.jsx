@@ -19,6 +19,12 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
   const status = complaint?.status;
   const payMode = complaint?.preferredPayMode;
 
+  // Use amount assigned by staff, or fallback to default
+  const amountPaise = complaint?.payment?.amount || DEFAULT_AMOUNT_PAISE;
+  const amountDisplay = complaint?.payment?.amount
+    ? `₹${(complaint.payment.amount / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+    : DEFAULT_AMOUNT_DISPLAY;
+
   // Load Razorpay script dynamically
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -45,7 +51,7 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
       }
 
       // Step 1: Create order on backend
-      const orderRes = await paymentService.createOrder(complaint._id, DEFAULT_AMOUNT_PAISE);
+      const orderRes = await paymentService.createOrder(complaint._id, amountPaise);
       const { orderId, amount, currency, keyId, complaintNumber } = orderRes.data.data;
 
       // Step 2: Open Razorpay Checkout
@@ -158,7 +164,7 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
               <CurrencyRupeeIcon className="h-5 w-5" />
               <span>Amount Due</span>
             </div>
-            <span className="text-2xl font-black text-sky-900">{DEFAULT_AMOUNT_DISPLAY}</span>
+            <span className="text-2xl font-black text-sky-900">{amountDisplay}</span>
           </div>
           <p className="text-xs text-sky-500 font-medium mt-2">
             Secure payment via Razorpay — UPI, Card, Net Banking supported
@@ -182,7 +188,7 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
           ) : (
             <>
               <CreditCardIcon className="h-6 w-6" />
-              Proceed to Pay — {DEFAULT_AMOUNT_DISPLAY}
+              Proceed to Pay — {amountDisplay}
             </>
           )}
         </button>
@@ -190,6 +196,23 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
         <div className="flex items-center justify-center gap-2 mt-3 text-xs text-slate-400 font-medium">
           <ShieldCheckIcon className="h-4 w-4" />
           <span>256-bit SSL encrypted · Powered by Razorpay</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Offline payment — work completed, waiting for staff to initiate payment collection
+  if (payMode === 'Offline' && status === 'Completed') {
+    return (
+      <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 p-6 rounded-2xl">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+            <CheckCircleIcon className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <p className="font-black text-blue-900 text-lg">Work Completed ✅</p>
+            <p className="text-sm text-blue-600 font-medium">Please wait for the staff member to visit for payment collection.</p>
+          </div>
         </div>
       </div>
     );
