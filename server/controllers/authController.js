@@ -240,40 +240,35 @@ export const updateProfile = async (req, res, next) => {
     if (!user.isProfileCompleted && role) {
       if (role === USER_ROLES.RESIDENT || role === USER_ROLES.STAFF) {
         user.role = role;
-        console.debug('[updateProfile] Updated role to:', role);
+        console.log('[updateProfile] Updated role to:', role);
       }
     }
 
     // Update allowed fields
-    if (name) user.name = name;
-    if (phone) user.phone = phone;
-
-    // Check if profile completion requirements are met
-    const canCompleteProfile = () => {
-      const hasBasicInfo = user.name && user.phone;
-      if (!hasBasicInfo) return false;
-      
-      if (user.role === USER_ROLES.RESIDENT) return !!flatNumber || !!user.flatNumber;
-      if (user.role === USER_ROLES.STAFF) return (expertise && expertise.length > 0) || (user.expertise && user.expertise.length > 0);
-      return true;
-    };
-
-    console.debug('[updateProfile] canCompleteProfile:', canCompleteProfile(), 'currentUserProfileCompleted:', user.isProfileCompleted);
+    if (name) user.name = name.trim();
+    if (phone) user.phone = phone.trim();
 
     // Update role-specific fields
-    if (user.role === USER_ROLES.RESIDENT && flatNumber) {
-      user.flatNumber = flatNumber;
+    if (user.role === USER_ROLES.RESIDENT) {
+      if (flatNumber) {
+        user.flatNumber = flatNumber.trim().toUpperCase();
+      } else if (!user.flatNumber) {
+        user.flatNumber = 'G-PENDING';
+      }
     }
 
-    if (user.role === USER_ROLES.STAFF && expertise) {
-      user.expertise = Array.isArray(expertise) ? expertise : [expertise];
+    if (user.role === USER_ROLES.STAFF) {
+      if (expertise) {
+        user.expertise = Array.isArray(expertise) ? expertise : [expertise];
+      }
+      if (!user.expertise || user.expertise.length === 0) {
+        user.expertise = ['Other'];
+      }
     }
 
-    // Complete profile if it's the first time
-    if (!user.isProfileCompleted && canCompleteProfile()) {
-      user.isProfileCompleted = true;
-      console.debug('[updateProfile] Setting isProfileCompleted to true');
-    }
+    // Complete profile
+    user.isProfileCompleted = true;
+    console.log('[updateProfile] Setting isProfileCompleted to true for user:', user._id);
 
     // Handle profile image upload
     if (req.file) {

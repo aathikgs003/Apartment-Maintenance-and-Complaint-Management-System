@@ -149,17 +149,19 @@ export const AuthProvider = ({ children }) => {
   // 5. Update Profile
   const updateProfile = async (formData) => {
     try {
-      // Do NOT set Content-Type for FormData; the browser will add the correct boundary
       const response = await axios.put(`${API_URL}/auth/update-profile`, formData);
       
       if (response.data.success) {
-        setUser(response.data.data.user);
-        toast.success('Profile updated successfully');
-        return { success: true };
+        const updatedUser = response.data.data.user;
+        setUser(updatedUser);
+        try {
+          localStorage.setItem('user', JSON.stringify(updatedUser));
+        } catch (e) {}
+        return { success: true, user: updatedUser };
       }
+      return { success: false, message: response.data?.message || 'Update failed' };
     } catch (error) {
       const message = error.response?.data?.message || 'Update failed';
-      toast.error(message);
       return { success: false, message };
     }
   };
