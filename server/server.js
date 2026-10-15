@@ -51,6 +51,9 @@ setupUncaughtExceptionHandler();
 // ====================================
 const app = express();
 
+// Trust reverse proxy (Render, Cloudflare, Vercel)
+app.set('trust proxy', 1);
+
 // ====================================
 // SECURITY MIDDLEWARES
 // ====================================
@@ -71,13 +74,36 @@ const corsOptions = {
       return callback(null, true);
     }
 
-    const allowedOrigins = process.env.ALLOWED_ORIGINS
+    const configuredOrigins = process.env.ALLOWED_ORIGINS
       ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-      : [process.env.FRONTEND_URL || 'http://localhost:5173'];
+      : [];
 
-    if (allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development') {
+    const defaultOrigins = [
+      process.env.FRONTEND_URL,
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://aptcare-frontend.vercel.app',
+    ].filter(Boolean);
+
+    const allowedOrigins = [...new Set([...configuredOrigins, ...defaultOrigins])];
+
+    let isAllowed = allowedOrigins.includes(origin) || process.env.NODE_ENV === 'development';
+
+    if (!isAllowed) {
+      try {
+        const parsedUrl = new URL(origin);
+        if (parsedUrl.hostname.endsWith('.vercel.app')) {
+          isAllowed = true;
+        }
+      } catch (e) {
+        // invalid url
+      }
+    }
+
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.warn(`[CORS] Request blocked from origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
@@ -99,13 +125,14 @@ app.use((req, res, next) => {
 // Rate limiting
 const limiter = rateLimit({
   windowMs: parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000, // 15 minutes
-  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 100, // limit each IP to 100 requests per windowMs
+  max: parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 200, // limit each IP to 200 requests per windowMs
   message: {
     success: false,
     message: 'Too many requests from this IP, please try again later.',
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
   // In development skip rate limiting to avoid blocking local testing and frequent reloads
   skip: (req) => {
     if (process.env.NODE_ENV === 'development') return true;
@@ -119,13 +146,14 @@ app.use('/api', limiter);
 // Stricter rate limit for auth routes
 const authLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 10, // 10 requests per hour for auth routes
+  max: 30, // 30 requests per hour for auth routes
   message: {
     success: false,
     message: 'Too many authentication attempts, please try again after an hour.',
   },
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { trustProxy: false },
 });
 
 app.use('/api/auth/login', authLimiter);
@@ -222,6 +250,25 @@ app.get('/api', (req, res) => {
   });
 });
 
+// Database readiness check for stateful API routes
+app.use('/api', (req, res, next) => {
+  // Allow health check, root api metadata, and debug endpoints
+  if (req.path === '/health' || req.path === '' || req.path.startsWith('/debug')) {
+    return next();
+  }
+
+  // If database is not connected (readyState !== 1: 0=disconnected, 2=connecting, 3=disconnecting)
+  if (mongoose.connection.readyState !== 1) {
+    const states = { 0: 'disconnected', 2: 'connecting', 3: 'disconnecting' };
+    return res.status(503).json({
+      success: false,
+      message: 'Database is connecting or temporarily unavailable. Please try again shortly.',
+      databaseStatus: states[mongoose.connection.readyState] || 'unavailable',
+    });
+  }
+  next();
+});
+
 // Mount routes
 app.use('/api/auth', authRoutes);
 app.use('/api/complaints', complaintRoutes);
@@ -260,6 +307,11 @@ const PORT = process.env.PORT || 5000;
 // Create initial admin user if not exists
 const createInitialAdmin = async () => {
   try {
+    if (mongoose.connection.readyState !== 1) {
+      console.log('⏳ Skipping initial admin check: database not yet connected');
+      return;
+    }
+
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@apartmentmaintenance.com';
     const existingAdmin = await User.findOne({ email: adminEmail });
 
@@ -288,24 +340,33 @@ const createInitialAdmin = async () => {
 // Start server function
 const startServer = async () => {
   try {
-    // Connect to database
-    await connectDatabase();
+    // Configure Cloudinary safely
+    try {
+      configureCloudinary();
+    } catch (cloudinaryErr) {
+      console.warn('⚠️ Cloudinary setup skipped/warning:', cloudinaryErr.message);
+    }
 
-    // Configure Cloudinary
-    configureCloudinary();
-
-    // Create initial admin user
-    await createInitialAdmin();
-
-    // Start the server
-    const server = app.listen(PORT, () => {
+    // Start the server immediately so Render detects port readiness
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log('='.repeat(50));
-      console.log(`🚀 Server running in ${process.env.NODE_ENV} mode`);
-      console.log(`📡 Server URL: http://localhost:${PORT}`);
-      console.log(`📋 API Base URL: http://localhost:${PORT}/api`);
-      console.log(`❤️  Health Check: http://localhost:${PORT}/api/health`);
+      console.log(`🚀 Server running in ${process.env.NODE_ENV || 'production'} mode`);
+      console.log(`📡 Server URL: http://0.0.0.0:${PORT}`);
+      console.log(`📋 API Base URL: http://0.0.0.0:${PORT}/api`);
+      console.log(`❤️  Health Check: http://0.0.0.0:${PORT}/api/health`);
       console.log('='.repeat(50));
     });
+
+    // Connect to database in background
+    connectDatabase()
+      .then(async (connection) => {
+        if (connection) {
+          await createInitialAdmin();
+        }
+      })
+      .catch((dbErr) => {
+        console.error('❌ Database connection error on startup:', dbErr.message);
+      });
 
     // Initialize Socket.io
     import('./utils/socket.js').then(({ initSocket }) => {
@@ -330,7 +391,7 @@ const startServer = async () => {
         console.error(`❌ Port ${PORT} is already in use`);
         process.exit(1);
       } else {
-        throw error;
+        console.error('Server error:', error.message);
       }
     });
   } catch (error) {

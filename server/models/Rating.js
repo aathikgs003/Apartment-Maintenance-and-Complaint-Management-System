@@ -67,7 +67,7 @@ const ratingSchema = new mongoose.Schema(
 // INDEXES
 // ====================================
 
-ratingSchema.index({ complaintId: 1 }, { unique: true });
+// ratingSchema.index({ complaintId: 1 }, { unique: true }); // Removed: Covered by field definition
 ratingSchema.index({ staffId: 1 });
 ratingSchema.index({ residentId: 1 });
 ratingSchema.index({ rating: 1 });

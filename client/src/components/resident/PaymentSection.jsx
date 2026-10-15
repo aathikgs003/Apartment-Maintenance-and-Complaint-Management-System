@@ -25,6 +25,11 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
     ? `₹${(complaint.payment.amount / 100).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
     : DEFAULT_AMOUNT_DISPLAY;
 
+  const residentPhone = (complaint?.residentId?.phone || complaint?.residentId?.mobile || '')
+    .toString()
+    .replace(/\D/g, '')
+    .slice(-10);
+
   // Load Razorpay script dynamically
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
@@ -82,6 +87,38 @@ const PaymentSection = ({ complaint, onPaymentSuccess }) => {
         prefill: {
           name: complaint.residentId?.name || '',
           email: complaint.residentId?.email || '',
+          contact: residentPhone || undefined,
+        },
+        method: {
+          upi: true,
+          card: true,
+          netbanking: true,
+          wallet: true,
+          emi: true,
+          paylater: true,
+        },
+        config: {
+          display: {
+            sequence: ['block.upi', 'block.cards', 'block.netbanking', 'block.wallet'],
+            blocks: {
+              upi: {
+                name: 'Pay via UPI',
+                instruments: [{ method: 'upi' }],
+              },
+              cards: {
+                name: 'Pay using Card',
+                instruments: [{ method: 'card' }],
+              },
+              netbanking: {
+                name: 'Net Banking',
+                instruments: [{ method: 'netbanking' }],
+              },
+              wallet: {
+                name: 'Wallets',
+                instruments: [{ method: 'wallet' }],
+              },
+            },
+          },
         },
         notes: {
           complaintId: complaint._id,

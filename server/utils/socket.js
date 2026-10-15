@@ -6,9 +6,33 @@ const activeUsers = new Map();
 export const initSocket = (server) => {
     io = new Server(server, {
         cors: {
-            origin: process.env.ALLOWED_ORIGINS
-                ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
-                : [process.env.FRONTEND_URL || 'http://localhost:5173'],
+            origin: (origin, callback) => {
+                if (!origin) return callback(null, true);
+                const configured = process.env.ALLOWED_ORIGINS
+                    ? process.env.ALLOWED_ORIGINS.split(',').map((o) => o.trim())
+                    : [];
+                const defaults = [
+                    process.env.FRONTEND_URL,
+                    'http://localhost:5173',
+                    'http://localhost:3000',
+                    'https://aptcare-frontend.vercel.app',
+                ].filter(Boolean);
+                const allowed = [...new Set([...configured, ...defaults])];
+
+                let isAllowed = allowed.includes(origin) || process.env.NODE_ENV === 'development';
+                if (!isAllowed) {
+                    try {
+                        const parsed = new URL(origin);
+                        if (parsed.hostname.endsWith('.vercel.app')) isAllowed = true;
+                    } catch (e) {}
+                }
+
+                if (isAllowed) {
+                    callback(null, true);
+                } else {
+                    callback(new Error('Not allowed by Socket CORS'));
+                }
+            },
             methods: ['GET', 'POST'],
             credentials: true,
         },

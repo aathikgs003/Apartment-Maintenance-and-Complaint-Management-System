@@ -1,4 +1,5 @@
 import { HTTP_STATUS, MESSAGES } from '../config/constants.js';
+import { validationResult } from 'express-validator';
 
 // ====================================
 // CUSTOM ERROR CLASS
@@ -159,7 +160,6 @@ export const asyncHandler = (fn) => {
  * @param   validationResult - Result from express-validator
  */
 export const handleValidationErrors = (req, res, next) => {
-  const { validationResult } = require('express-validator');
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -212,14 +212,9 @@ export const corsErrorHandler = (err, req, res, next) => {
 export const setupUnhandledRejectionHandler = (server) => {
   process.on('unhandledRejection', (reason, promise) => {
     console.error('='.repeat(50));
-    console.error('UNHANDLED REJECTION! Shutting down...');
+    console.error('⚠️ UNHANDLED PROMISE REJECTION:');
     console.error('Reason:', reason);
     console.error('='.repeat(50));
-
-    // Close server gracefully
-    server.close(() => {
-      process.exit(1);
-    });
   });
 };
 

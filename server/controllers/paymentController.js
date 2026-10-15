@@ -10,11 +10,25 @@ import {
   USER_ROLES,
 } from '../config/constants.js';
 
-// Initialize Razorpay instance
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
+// Helper to lazily initialize Razorpay instance
+let razorpayInstance = null;
+const getRazorpayInstance = () => {
+  const key_id = process.env.RAZORPAY_KEY_ID;
+  const key_secret = process.env.RAZORPAY_KEY_SECRET;
+
+  if (!key_id || !key_secret || key_id === 'rzp_test_yourkeyid' || key_secret === 'yourtestkeysecret') {
+    return null;
+  }
+
+  if (!razorpayInstance) {
+    razorpayInstance = new Razorpay({
+      key_id,
+      key_secret,
+    });
+  }
+
+  return razorpayInstance;
+};
 
 // ====================================
 // @desc    Create Razorpay order for a complaint
@@ -57,10 +71,9 @@ export const createOrder = async (req, res, next) => {
     }
 
     // Check if Razorpay is properly configured
+    const razorpay = getRazorpayInstance();
     const razorpayKeyId = process.env.RAZORPAY_KEY_ID;
-    const razorpayKeySecret = process.env.RAZORPAY_KEY_SECRET;
-    if (!razorpayKeyId || razorpayKeyId === 'rzp_test_yourkeyid' ||
-        !razorpayKeySecret || razorpayKeySecret === 'yourtestkeysecret') {
+    if (!razorpay || !razorpayKeyId) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
         message: 'Payment gateway is not configured. Please contact the administrator.',

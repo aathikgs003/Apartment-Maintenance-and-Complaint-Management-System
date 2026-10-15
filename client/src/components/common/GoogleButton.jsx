@@ -24,6 +24,8 @@ const GoogleButton = ({ className }) => {
   }, []);
 
   const loginRef = useRef(googleLogin);
+  const initializedRef = useRef(false);
+
   useEffect(() => {
     loginRef.current = googleLogin;
   }, [googleLogin]);
@@ -39,19 +41,22 @@ const GoogleButton = ({ className }) => {
 
     // Initialize GSI with callback that receives the ID token
     try {
-      window.google.accounts.id.initialize({
-        client_id: clientId,
-        callback: async (response) => {
-          // Debug: log returned credential presence
-          console.debug('GSI callback response present:', !!response, response && { hasCredential: !!response.credential });
-          if (response && response.credential && loginRef.current) {
-            await loginRef.current(response.credential);
-          }
-        },
-      });
+      if (!initializedRef.current && window.google?.accounts?.id) {
+        window.google.accounts.id.initialize({
+          client_id: clientId,
+          callback: async (response) => {
+            // Debug: log returned credential presence
+            console.debug('GSI callback response present:', !!response, response && { hasCredential: !!response.credential });
+            if (response && response.credential && loginRef.current) {
+              await loginRef.current(response.credential);
+            }
+          },
+        });
+        initializedRef.current = true;
+      }
 
       // Render Google's official button into our container
-      if (btnRef.current) {
+      if (btnRef.current && window.google?.accounts?.id) {
         window.google.accounts.id.renderButton(btnRef.current, {
           type: 'standard',
           theme: 'outline',
