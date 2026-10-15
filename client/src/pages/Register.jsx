@@ -210,7 +210,7 @@ const Register = () => {
               {step === 1 ? (
                 <div className="space-y-5 animate-fade-in">
                   <div className="hover:scale-[1.02] transition-transform active:scale-[0.98] mb-6">
-                    <GoogleButton />
+                    <GoogleButton role={formData.role} />
                   </div>
 
                   <div className="relative my-6">

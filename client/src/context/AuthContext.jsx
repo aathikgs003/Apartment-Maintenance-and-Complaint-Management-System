@@ -79,9 +79,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   // 2b. Google login using ID token
-  const googleLogin = async (idToken) => {
+  const googleLogin = async (idToken, selectedRole) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/google`, { id_token: idToken });
+      const payload = { id_token: idToken };
+      if (selectedRole) payload.role = selectedRole;
+      const response = await axios.post(`${API_URL}/auth/google`, payload);
 
       if (response.data.success) {
         const { user: userData, token: userToken } = response.data.data;

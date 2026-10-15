@@ -258,6 +258,7 @@ export const updateProfile = async (req, res, next) => {
     }
 
     if (user.role === USER_ROLES.STAFF) {
+      user.flatNumber = undefined;
       if (expertise) {
         user.expertise = Array.isArray(expertise) ? expertise : [expertise];
       }
@@ -480,9 +481,21 @@ export const googleAuth = async (req, res, next) => {
       user.avatar = profile.avatar || user.avatar;
       user.isVerified = true;
       if (!user.isActive) user.isActive = true;
+
+      // If user profile isn't completed yet and role is explicitly specified (e.g. from register page)
+      if (!user.isProfileCompleted && req.body.role) {
+        if (req.body.role === USER_ROLES.STAFF || req.body.role === USER_ROLES.RESIDENT) {
+          user.role = req.body.role;
+        }
+      }
+
       if (user.role === USER_ROLES.RESIDENT) {
         if (!user.flatNumber || !VALIDATION.FLAT_NUMBER_REGEX.test(user.flatNumber)) {
           user.flatNumber = 'G-PENDING';
+        }
+      } else {
+        if (user.flatNumber === 'G-PENDING') {
+          user.flatNumber = undefined;
         }
       }
       await user.save();
@@ -491,17 +504,21 @@ export const googleAuth = async (req, res, next) => {
       return sendTokenResponse(user, HTTP_STATUS.OK, res, MESSAGES.SUCCESS.LOGGED_IN);
     }
 
-    // Create new resident user
+    // Create new user (Resident or Staff based on registration choice)
+    const selectedRole = req.body.role === USER_ROLES.STAFF ? USER_ROLES.STAFF : USER_ROLES.RESIDENT;
     const newUserData = {
       name: profile.name,
       email,
-      role: USER_ROLES.RESIDENT,
-      flatNumber: 'G-PENDING',
+      role: selectedRole,
       googleId: profile.googleId,
       avatar: profile.avatar,
       isVerified: true,
       isProfileCompleted: false,
     };
+
+    if (selectedRole === USER_ROLES.RESIDENT) {
+      newUserData.flatNumber = 'G-PENDING';
+    }
 
     user = await User.create(newUserData);
     await user.updateLastLogin();

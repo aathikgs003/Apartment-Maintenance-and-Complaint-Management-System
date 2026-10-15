@@ -8,7 +8,6 @@ import {
   HomeModernIcon,
   CheckBadgeIcon,
   WrenchScrewdriverIcon,
-  UserGroupIcon,
 } from '@heroicons/react/24/outline';
 import { STAFF_EXPERTISE } from '../../utils/constants';
 
@@ -17,10 +16,14 @@ const ProfileCompletion = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
+  // The user's role is determined by their assigned account role (e.g., set by Admin or chosen at registration)
+  const isStaff = user?.role === 'staff';
+  const assignedRole = isStaff ? 'staff' : 'resident';
+
   const [formData, setFormData] = useState({
     name: user?.name || '',
     phone: user?.phone || '',
-    role: user?.role === 'staff' ? 'staff' : 'resident',
+    role: assignedRole,
     flatNumber: user?.flatNumber === 'G-PENDING' ? '' : user?.flatNumber || '',
     expertise: Array.isArray(user?.expertise) && user.expertise.length > 0 ? user.expertise : [],
   });
@@ -31,14 +34,6 @@ const ProfileCompletion = () => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: '' }));
-  };
-
-  const handleRoleSelect = (selectedRole) => {
-    setFormData((prev) => ({
-      ...prev,
-      role: selectedRole,
-    }));
-    setErrors((prev) => ({ ...prev, flatNumber: '', expertise: '' }));
   };
 
   const toggleExpertise = (exp) => {
@@ -62,13 +57,13 @@ const ProfileCompletion = () => {
     else if (!/^[6-9]\d{9}$/.test(cleanPhone))
       newErrors.phone = 'Invalid 10-digit Indian phone number';
 
-    if (formData.role === 'resident') {
-      if (!formData.flatNumber.trim()) {
-        newErrors.flatNumber = 'Flat number is required';
-      }
-    } else if (formData.role === 'staff') {
+    if (isStaff) {
       if (!formData.expertise || formData.expertise.length === 0) {
         newErrors.expertise = 'Please select at least one area of expertise';
+      }
+    } else {
+      if (!formData.flatNumber.trim()) {
+        newErrors.flatNumber = 'Flat number is required';
       }
     }
 
@@ -85,19 +80,19 @@ const ProfileCompletion = () => {
       const payload = {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
-        role: formData.role,
+        role: assignedRole,
       };
 
-      if (formData.role === 'resident') {
-        payload.flatNumber = formData.flatNumber.trim().toUpperCase();
-      } else if (formData.role === 'staff') {
+      if (isStaff) {
         payload.expertise = formData.expertise;
+      } else {
+        payload.flatNumber = formData.flatNumber.trim().toUpperCase();
       }
 
       const result = await updateProfile(payload);
       if (result && result.success) {
         toast.success('Profile completed successfully! Welcome aboard.');
-        const targetRole = result.user?.role || payload.role || 'resident';
+        const targetRole = result.user?.role || assignedRole;
         navigate(`/${targetRole}/dashboard`, { replace: true });
       } else {
         toast.error(result?.message || 'Failed to complete profile. Please try again.');
@@ -124,7 +119,11 @@ const ProfileCompletion = () => {
             </div>
             <div>
               <h2 className="text-2xl font-black tracking-tight">Complete Your Profile</h2>
-              <p className="text-sky-100/80 text-sm font-medium">Just a few more details to get started</p>
+              <p className="text-sky-100/80 text-sm font-medium">
+                {isStaff
+                  ? 'Set up your details and select your maintenance specialties'
+                  : 'Set up your contact number and assigned apartment flat'}
+              </p>
             </div>
           </div>
 
@@ -139,36 +138,28 @@ const ProfileCompletion = () => {
 
         <div className="p-8 max-h-[70vh] overflow-y-auto custom-scrollbar">
           <form id="complete-profile-form" onSubmit={handleSubmit} className="space-y-6">
-            {/* Role Selection */}
-            <div>
-              <label className="text-sm font-bold text-slate-700 block mb-2">Select Your Role</label>
-              <div className="grid grid-cols-2 gap-3">
-                <button
-                  type="button"
-                  onClick={() => handleRoleSelect('resident')}
-                  className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 font-bold text-sm transition-all ${
-                    formData.role === 'resident'
-                      ? 'border-sky-500 bg-sky-50 text-sky-700 shadow-sm'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-                  }`}
-                >
-                  <HomeModernIcon className="h-5 w-5" />
-                  <span>Resident</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleRoleSelect('staff')}
-                  className={`flex items-center justify-center gap-2 p-3.5 rounded-xl border-2 font-bold text-sm transition-all ${
-                    formData.role === 'staff'
-                      ? 'border-sky-500 bg-sky-50 text-sky-700 shadow-sm'
-                      : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
-                  }`}
-                >
-                  <WrenchScrewdriverIcon className="h-5 w-5" />
-                  <span>Maintenance Staff</span>
-                </button>
+            {/* Active Role Indicator (Locked to assigned role) */}
+            <div className="flex items-center justify-between p-4 bg-sky-50/70 border border-sky-100 rounded-2xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shadow-sm">
+                  {isStaff ? (
+                    <WrenchScrewdriverIcon className="h-5 w-5" />
+                  ) : (
+                    <HomeModernIcon className="h-5 w-5" />
+                  )}
+                </div>
+                <div>
+                  <span className="text-xs uppercase tracking-wider text-slate-400 font-bold block">
+                    Account Role
+                  </span>
+                  <span className="text-sm font-extrabold text-slate-800 capitalize">
+                    {isStaff ? 'Maintenance Staff' : 'Apartment Resident'}
+                  </span>
+                </div>
               </div>
+              <span className="text-xs font-bold px-3 py-1 rounded-full bg-sky-100 text-sky-700">
+                Assigned
+              </span>
             </div>
 
             {/* Name & Phone */}
@@ -205,8 +196,8 @@ const ProfileCompletion = () => {
               </div>
             </div>
 
-            {/* Resident: Flat Number */}
-            {formData.role === 'resident' && (
+            {/* Resident: Flat Number (Only shown if Resident) */}
+            {!isStaff && (
               <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-2 mb-3">
                   <HomeModernIcon className="h-5 w-5 text-sky-600" />
@@ -228,8 +219,8 @@ const ProfileCompletion = () => {
               </div>
             )}
 
-            {/* Staff: Expertise Areas */}
-            {formData.role === 'staff' && (
+            {/* Staff: Expertise Areas (Only shown if Staff) */}
+            {isStaff && (
               <div className="bg-slate-50 p-6 rounded-2xl border border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
                 <div className="flex items-center gap-2 mb-3">
                   <WrenchScrewdriverIcon className="h-5 w-5 text-sky-600" />
@@ -246,9 +237,9 @@ const ProfileCompletion = () => {
                         key={exp}
                         type="button"
                         onClick={() => toggleExpertise(exp)}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                        className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           isSelected
-                            ? 'bg-sky-600 text-white shadow-sm ring-2 ring-sky-300'
+                            ? 'bg-sky-600 text-white shadow-md ring-2 ring-sky-300'
                             : 'bg-white text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                         }`}
                       >
