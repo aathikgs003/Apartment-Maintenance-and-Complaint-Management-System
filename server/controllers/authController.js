@@ -485,8 +485,10 @@ export const googleAuth = async (req, res, next) => {
       user.avatar = profile.avatar || user.avatar;
       user.isVerified = true;
       if (!user.isActive) user.isActive = true;
-      if (user.role === USER_ROLES.RESIDENT && !user.flatNumber) {
-        user.flatNumber = 'G-PENDING';
+      if (user.role === USER_ROLES.RESIDENT) {
+        if (!user.flatNumber || !VALIDATION.FLAT_NUMBER_REGEX.test(user.flatNumber)) {
+          user.flatNumber = 'G-PENDING';
+        }
       }
       await user.save();
 

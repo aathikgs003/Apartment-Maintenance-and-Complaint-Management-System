@@ -210,13 +210,14 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-// Validate flatNumber for residents
-userSchema.pre('save', function (next) {
-  if (this.role === USER_ROLES.RESIDENT && !this.flatNumber) {
-    // For Google-created users, default flatNumber
+// Validate flatNumber for residents (pre-validate runs before schema path match validator)
+userSchema.pre('validate', function (next) {
+  if (this.role === USER_ROLES.RESIDENT) {
     if (this.googleId) {
-      this.flatNumber = 'G-PENDING';
-    } else {
+      if (!this.flatNumber || !VALIDATION.FLAT_NUMBER_REGEX.test(this.flatNumber)) {
+        this.flatNumber = 'G-PENDING';
+      }
+    } else if (!this.flatNumber) {
       const error = new Error('Flat number is required for residents');
       error.name = 'ValidationError';
       return next(error);

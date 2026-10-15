@@ -116,9 +116,9 @@ export const VALIDATION = {
   EMAIL_REGEX: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
   EMAIL_MESSAGE: 'Please provide a valid email address',
 
-  // Flat number validation
-  FLAT_NUMBER_REGEX: /^[A-Za-z0-9-]+$/,
-  FLAT_NUMBER_MESSAGE: 'Flat number must be alphanumeric',
+  // Flat number validation (supports formats like A-101, Flat 101, A/102, G-PENDING)
+  FLAT_NUMBER_REGEX: /^[A-Za-z0-9\s\/-]+$/,
+  FLAT_NUMBER_MESSAGE: 'Flat number must contain only letters, numbers, spaces, hyphens, or slashes',
 
   // Complaint description
   DESCRIPTION_MIN_LENGTH: 10,
