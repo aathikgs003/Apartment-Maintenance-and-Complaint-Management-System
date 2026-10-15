@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '../../hooks/useAuth';
+import { toast } from 'react-hot-toast';
 
 const GoogleButton = ({ className }) => {
   const { googleLogin } = useAuth();
@@ -48,7 +49,11 @@ const GoogleButton = ({ className }) => {
             // Debug: log returned credential presence
             console.debug('GSI callback response present:', !!response, response && { hasCredential: !!response.credential });
             if (response && response.credential && loginRef.current) {
-              await loginRef.current(response.credential);
+              const res = await loginRef.current(response.credential);
+              if (res && !res.success) {
+                toast.error(res.message || 'Google sign-in failed');
+                console.error('[Google Sign-In Error]:', res.message);
+              }
             }
           },
         });

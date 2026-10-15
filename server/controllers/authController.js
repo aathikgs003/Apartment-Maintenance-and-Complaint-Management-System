@@ -426,7 +426,7 @@ export const verifyToken = async (req, res, next) => {
 export const googleAuth = async (req, res, next) => {
   try {
     const id_token = req.body.id_token || req.body.credential;
-    console.debug('[googleAuth] incoming body keys:', Object.keys(req.body), 'id_token present:', !!id_token);
+    console.log('[googleAuth] incoming body keys:', Object.keys(req.body), 'id_token present:', !!id_token);
 
     if (!id_token) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
@@ -435,16 +435,37 @@ export const googleAuth = async (req, res, next) => {
       });
     }
 
-    const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    const rawClientId = process.env.GOOGLE_CLIENT_ID;
+    const configuredClientId = rawClientId
+      ? rawClientId.replace(/^["']|["']$/g, '').trim()
+      : null;
+
+    // Use configured clientId or fallback to the application Google client ID
+    const clientId = configuredClientId || '273039311939-1vi20mttnvgti92ujuu0n8i8fb4a542o.apps.googleusercontent.com';
+
+    const client = new OAuth2Client(clientId);
 
     // Verify ID token
-    const ticket = await client.verifyIdToken({ idToken: id_token, audience: process.env.GOOGLE_CLIENT_ID });
+    let ticket;
+    try {
+      ticket = await client.verifyIdToken({
+        idToken: id_token,
+        audience: clientId,
+      });
+    } catch (verifyErr) {
+      console.error('❌ Google verifyIdToken error:', verifyErr.message);
+      return res.status(HTTP_STATUS.BAD_REQUEST).json({
+        success: false,
+        message: `Google authentication failed: ${verifyErr.message}`,
+      });
+    }
+
     const payload = ticket.getPayload();
 
     if (!payload || !payload.email) {
       return res.status(HTTP_STATUS.BAD_REQUEST).json({
         success: false,
-        message: 'Invalid ID token',
+        message: 'Invalid ID token (no email in token)',
       });
     }
 
@@ -452,7 +473,7 @@ export const googleAuth = async (req, res, next) => {
     const profile = {
       googleId: payload.sub,
       email,
-      name: payload.name || `${payload.given_name || ''} ${payload.family_name || ''}`.trim(),
+      name: payload.name || `${payload.given_name || ''} ${payload.family_name || ''}`.trim() || 'Google User',
       avatar: payload.picture || null,
     };
 
@@ -464,6 +485,9 @@ export const googleAuth = async (req, res, next) => {
       user.avatar = profile.avatar || user.avatar;
       user.isVerified = true;
       if (!user.isActive) user.isActive = true;
+      if (user.role === USER_ROLES.RESIDENT && !user.flatNumber) {
+        user.flatNumber = 'G-PENDING';
+      }
       await user.save();
 
       await user.updateLastLogin();
@@ -472,11 +496,10 @@ export const googleAuth = async (req, res, next) => {
 
     // Create new resident user
     const newUserData = {
-      name: profile.name || 'Google User',
+      name: profile.name,
       email,
       role: USER_ROLES.RESIDENT,
       flatNumber: 'G-PENDING',
-      phone: undefined,
       googleId: profile.googleId,
       avatar: profile.avatar,
       isVerified: true,
@@ -488,11 +511,11 @@ export const googleAuth = async (req, res, next) => {
 
     return sendTokenResponse(user, HTTP_STATUS.CREATED, res, MESSAGES.SUCCESS.REGISTERED);
   } catch (error) {
-    // If token verification fails, give clear error
-    if (error && error.message && error.message.includes('invalid_token')) {
-      return res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'Invalid ID token' });
-    }
-    next(error);
+    console.error('❌ Google Auth Error:', error);
+    return res.status(HTTP_STATUS.BAD_REQUEST).json({
+      success: false,
+      message: error.message || 'Google authentication failed',
+    });
   }
 };
 
