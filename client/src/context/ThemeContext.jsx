@@ -10,10 +10,7 @@ export const ThemeProvider = ({ children }) => {
     } catch (e) {
       // ignore localStorage errors
     }
-    // Fall back to system preference
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      return 'dark';
-    }
+    // Default to light mode
     return 'light';
   };
 
